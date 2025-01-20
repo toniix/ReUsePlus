@@ -9,20 +9,11 @@ import PostsGrid from "./PostsGrid";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const [selectedPost, setSelectedPost] = useState(null);
   const { isDark, toggleTheme } = useTheme();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
-
-  // const handlePostClick = (post) => {
-  //   setSelectedPost(post);
-  // };
-
-  // const closeModal = () => {
-  //   setSelectedPost(null);
-  // };
 
   return (
     <div

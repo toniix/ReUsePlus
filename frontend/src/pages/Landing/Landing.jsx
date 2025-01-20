@@ -6,14 +6,10 @@ import HowWorkIt from "./HowWorkIt";
 import SuccessStories from "./SuccessStories";
 import Contact from "./Contact";
 
-import { useState } from "react";
-
 const Landing = () => {
-  const [showLoginModal, setShowLoginModal] = useState(false);
-
   return (
     <div className="min-h-screen bg-white">
-      <Navbar setShowLoginModal={setShowLoginModal} />
+      <Navbar />
       <Hero />
       <HowWorkIt />
       <SuccessStories />

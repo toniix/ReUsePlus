@@ -8,6 +8,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabaseClient } from "../../supabase/client";
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
   return (
@@ -79,14 +80,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
         </nav>
 
         <div className="mt-auto pt-8">
-          {/* <a
-            href="#"
-            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Logout</span>
-          </a> */}
-          <Link to="/">
+          {/* <Link to="/">
             <a
               href="#"
               className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
@@ -94,7 +88,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
             </a>
-          </Link>
+          </Link> */}
+          <button
+            onClick={() => supabaseClient.auth.signOut()}
+            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
+          >
+            <LogOut className="h-5 w-5" />
+            logOut
+          </button>
         </div>
       </aside>
     </>
