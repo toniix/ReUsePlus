@@ -1,4 +1,3 @@
-import React, { useContext } from "react";
 import {
   Sun,
   Moon,
@@ -8,11 +7,9 @@ import {
   Heart,
   LogOut,
 } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
+import { Link } from "react-router-dom";
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
-  // const { isDark, toggleTheme } = useTheme();
-
   return (
     <>
       {/* Overlay */}
@@ -82,13 +79,22 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
         </nav>
 
         <div className="mt-auto pt-8">
-          <a
+          {/* <a
             href="#"
             className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
           >
             <LogOut className="h-5 w-5" />
             <span>Logout</span>
-          </a>
+          </a> */}
+          <Link to="/">
+            <a
+              href="#"
+              className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Logout</span>
+            </a>
+          </Link>
         </div>
       </aside>
     </>

@@ -1,4 +1,5 @@
 import { FaSignInAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ setShowLoginModal }) => {
   return (
@@ -19,13 +20,19 @@ const Navbar = ({ setShowLoginModal }) => {
             <a href="#contact" className="text-gray-700 hover:text-blue-600">
               Contacto
             </a>
-            <button
-              onClick={() => setShowLoginModal(true)}
+            {/* <button
+              // onClick={() => setShowLoginModal(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
             >
               <FaSignInAlt className="mr-2" />
               Iniciar Sesión
-            </button>
+            </button> */}
+            <Link to="/dashboard">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
+                <span className="mr-2">Iniciar Sesión</span>
+                <FaSignInAlt className="mr-2" />
+              </button>
+            </Link>
           </div>
         </div>
       </div>
