@@ -1,32 +1,27 @@
 import Landing from "./pages/Landing/Landing";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import NotFound from "./pages/NotFound";
+import NotFound from "./Components/NotFound";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { supabaseClient } from "./supabase/client";
-import { useEffect } from "react";
+import { ContextProvider } from "./context/GlobalContext";
+import { Routes, Route, useNavigate, Router } from "react-router-dom";
 
 function App() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/");
-      } else {
-        navigate("/dashboard");
-      }
-    });
-  }, []);
-
   return (
-    <div>
+    <ContextProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </div>
+    </ContextProvider>
   );
 }
 

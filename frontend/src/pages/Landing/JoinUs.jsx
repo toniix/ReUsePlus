@@ -1,6 +1,6 @@
 import { FaHeart, FaHandHoldingHeart, FaUsers } from "react-icons/fa";
 
-const JoinUs = () => {
+const JoinUs = ({ handleOpenRegister }) => {
   return (
     <section className="py-16 bg-blue-600">
       <div className="container mx-auto px-6 text-center">
@@ -14,7 +14,10 @@ const JoinUs = () => {
             <p className="text-gray-600 mb-4">
               Da nueva vida a tus objetos y ayuda a quien lo necesita.
             </p>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
+            <button
+              onClick={handleOpenRegister}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+            >
               Donar Ahora
             </button>
           </div>
@@ -25,7 +28,10 @@ const JoinUs = () => {
               Encuentra los recursos que necesitas para mejorar tu calidad de
               vida.
             </p>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
+            <button
+              onClick={handleOpenRegister}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+            >
               Solicitar Ayuda
             </button>
           </div>
@@ -35,7 +41,10 @@ const JoinUs = () => {
             <p className="text-gray-600 mb-4">
               Ayuda a conectar donaciones con quienes más las necesitan.
             </p>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
+            <button
+              onClick={handleOpenRegister}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+            >
               Ser Voluntario
             </button>
           </div>
