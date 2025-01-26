@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useTheme } from "../../context/ThemeContext";
 
@@ -7,12 +7,20 @@ import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
 import PostsGrid from "./PostsGrid";
 
-function App() {
+function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
+  };
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const closeProfileMenu = () => {
+    setIsProfileMenuOpen(false);
   };
 
   return (
@@ -25,6 +33,7 @@ function App() {
         toggleSidebar={toggleSidebar}
         toggleTheme={toggleTheme}
         isDark={isDark}
+        setIsSidebarOpen={setIsSidebarOpen}
       />
 
       <div className="flex">
@@ -37,9 +46,13 @@ function App() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-8">
+        <main className="flex-1 p-4 lg:p-8 lg:ml-64">
           {/* Header */}
-          <Header />
+          <Header
+            toggleProfileMenu={toggleProfileMenu}
+            isProfileMenuOpen={isProfileMenuOpen}
+            closeProfileMenu={closeProfileMenu}
+          />
           {/* Posts Grid */}
           <PostsGrid />
         </main>
@@ -48,4 +61,4 @@ function App() {
   );
 }
 
-export default App;
+export default Dashboard;

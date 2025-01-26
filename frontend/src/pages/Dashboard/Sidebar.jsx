@@ -1,15 +1,8 @@
-import {
-  Sun,
-  Moon,
-  LayoutGrid,
-  Clock,
-  Settings,
-  Heart,
-  LogOut,
-} from "lucide-react";
-import { supabase } from "../../supabase/client";
-
+import { Sun, Moon, LayoutGrid, Clock, Heart, UserCircle } from "lucide-react";
+import ProfileOptions from "./ProfileOptions";
+import { useGlobalContext } from "../../context/GlobalContext";
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
+  const { user, profile } = useGlobalContext();
   return (
     <>
       {/* Overlay */}
@@ -22,9 +15,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
 
       <aside
         className={`
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
-          fixed lg:static
+          fixed
           inset-y-0 left-0
           w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
           p-6
@@ -33,7 +26,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
           lg:block
           ${isSidebarOpen ? "block" : "hidden"}
           h-full
-        `}
+          overflow-y-auto
+      `}
       >
         <div className="hidden lg:flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
@@ -69,32 +63,22 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
             <Clock className="h-5 w-5" />
             <span>Recent</span>
           </a>
-          <a
-            href="#"
-            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
-          >
-            <Settings className="h-5 w-5" />
-            <span>Settings</span>
-          </a>
         </nav>
 
-        <div className="mt-auto pt-8">
-          {/* <Link to="/">
-            <a
-              href="#"
-              className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
-            >
-              <LogOut className="h-5 w-5" />
-              <span>Logout</span>
-            </a>
-          </Link> */}
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
-          >
-            <LogOut className="h-5 w-5" />
-            logOut
-          </button>
+        {/* Profile options in mobile view */}
+        <div className="lg:hidden mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 px-4 py-2 mb-4">
+            <UserCircle className="h-8 w-8 text-gray-600 dark:text-gray-300" />
+            <div>
+              <h3 className="font-medium text-gray-900 dark:text-white">
+                {profile?.full_name}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {user?.email}
+              </p>
+            </div>
+          </div>
+          <ProfileOptions />
         </div>
       </aside>
     </>

@@ -13,21 +13,29 @@ import Login from "../../Components/Login";
 const Landing = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const handleOpenLogin = () => {
     setShowRegisterModal(false);
     setShowLoginModal(true);
+    setIsMenuOpen(false);
   };
 
   const handleOpenRegister = () => {
     setShowLoginModal(false);
     setShowRegisterModal(true);
+    setIsMenuOpen(false);
   };
 
   return (
     <>
       {" "}
       <div className="min-h-screen bg-white">
-        <Navbar setShowLoginModal={setShowLoginModal} />
+        <Navbar
+          handleOpenLogin={handleOpenLogin}
+          setIsMenuOpen={setIsMenuOpen}
+          isMenuOpen={isMenuOpen}
+        />
         <Hero />
         <HowWorkIt />
         <SuccessStories />

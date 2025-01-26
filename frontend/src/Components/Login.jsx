@@ -46,9 +46,6 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
         email: "",
         password: "",
       });
-
-      // Opcional: Redirigir a otra página
-      // window.location.href = '/dashboard';
     } catch (error) {
       setError(error.message);
     }

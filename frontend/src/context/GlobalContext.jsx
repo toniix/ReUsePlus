@@ -8,16 +8,57 @@ export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     // Verificar sesión actual al cargar la aplicación
     const checkUserSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data?.session?.user || null);
-      setLoading(false);
+      try {
+        // Obtener la sesión actual del usuario
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
 
-      if (!data?.session?.user) {
-        navigate("/"); // Redirigir a la página de login si no hay sesión
+        if (sessionError) {
+          throw sessionError;
+        }
+
+        const currentUser = sessionData?.session?.user || null;
+
+        // Si no hay usuario, redirigir a la página de login
+        if (!currentUser) {
+          navigate("/"); // Redirigir a la página de login si no hay sesión
+          setLoading(false);
+          return;
+        }
+
+        // Guardar el usuario en el estado global
+        setUser(currentUser);
+
+        // Obtener el perfil del usuario desde la tabla "profiles"
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("is_donor, full_name")
+          .eq("id", currentUser.id)
+          .single();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        // Guardar el perfil en el estado global o en un estado local
+        setProfile({
+          isDonor: profile?.is_donor || null,
+          full_name: profile?.full_name || null,
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error(
+          "Error al verificar la sesión del usuario:",
+          error.message
+        );
+        setLoading(false);
+        navigate("/"); // Redirigir a la página de login en caso de error
       }
     };
 
@@ -29,8 +70,8 @@ export const ContextProvider = ({ children }) => {
         setUser(session?.user || null);
         if (!session?.user) {
           navigate("/");
-        } else {
-          navigate("/dashboard"); // Redirigir al dashboard si está autenticado
+        } else if (window.location.pathname === "/") {
+          navigate("/dashboard");
         }
       }
     );
@@ -41,7 +82,7 @@ export const ContextProvider = ({ children }) => {
   }, [navigate]);
 
   return (
-    <GlobalContext.Provider value={{ user, loading }}>
+    <GlobalContext.Provider value={{ user, loading, profile }}>
       {!loading && children}
     </GlobalContext.Provider>
   );
