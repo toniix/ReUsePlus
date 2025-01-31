@@ -2,10 +2,8 @@ import {
   Search,
   Filter,
   ChevronDown,
-  Plus,
   Bell,
   UserCircle,
-  ListFilter,
   Gift,
 } from "lucide-react";
 import ProfileOptions from "./ProfileOptions";
@@ -13,7 +11,6 @@ import { supabase } from "../../supabase/client";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import PostForm from "./PostForm";
 
 const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
   const { user, profile } = useGlobalContext(); // Asegúrate de que setUser esté disponible en tu contexto
@@ -85,14 +82,9 @@ const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
           <ChevronDown className="h-4 w-4" />
         </button>
 
-        <button className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-          <ListFilter className="h-5 w-5" />
-          <span>Listar publicaciones</span>
-        </button>
-
         {isDonor && (
           <Link to="/dashboard/post/new">
-            <button className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+            <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg">
               <Gift className="h-5 w-5" />
               <span>Crear publicacion</span>
             </button>
@@ -102,7 +94,7 @@ const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
         {!isDonor && (
           <button
             onClick={becomeDonor}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg"
           >
             <Gift className="h-5 w-5" />
             <span>Quiero donar</span>

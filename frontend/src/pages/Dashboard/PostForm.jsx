@@ -1,29 +1,32 @@
 import { AlertCircle, MapPin } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CATEGORIES, CONDITIONS } from "../../assets/postForm";
 import { usePostForm } from "../../hooks/usePostForm";
-import { ImageUpload } from "../../components/PostForm/ImageUpload";
-import { TagInput } from "../../components/PostForm/TagInput";
+import { ImageUpload } from "../../Components/PostForm/ImageUpload";
+import { TagInput } from "../../Components/PostForm/TagInput";
 import { useGlobalContext } from "../../context/GlobalContext";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function PostForm() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useGlobalContext();
+  const postToEdit = location.state?.postToEdit;
+
   const {
     formData,
     currentTag,
     errors,
     isSubmitting,
+    isEditing,
     handleChange,
     handleImageUpload,
     removeImage,
     addTag,
     removeTag,
     setCurrentTag,
-    submitForm
-  } = usePostForm(user);
+    submitForm,
+    setFormData,
+  } = usePostForm(user, postToEdit);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +41,7 @@ export default function PostForm() {
       <div className="max-w-3xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-            Publicar Donación
+            {isEditing ? "Editar Donación" : "Publicar Donación"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -321,35 +324,14 @@ export default function PostForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200 flex items-center gap-2 ${
-                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
+                className="w-full bg-rose-500 text-white py-3 rounded-lg hover:bg-rose-600 transition-colors focus:ring-2 focus:ring-rose-500 focus:outline-none"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-                    Publicando...
-                  </>
-                ) : (
-                  'Publicar'
-                )}
+                {isEditing ? "Actualizar Donación" : "Publicar Donación"}
               </button>
             </div>
           </form>
         </div>
       </div>
-      <ToastContainer 
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
     </div>
   );
 }

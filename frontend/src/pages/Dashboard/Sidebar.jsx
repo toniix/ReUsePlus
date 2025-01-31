@@ -1,8 +1,17 @@
 import { Sun, Moon, LayoutGrid, Clock, Heart, UserCircle } from "lucide-react";
 import ProfileOptions from "./ProfileOptions";
 import { useGlobalContext } from "../../context/GlobalContext";
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
+import { List, Globe } from "react-feather";
+
+const Sidebar = ({ 
+  isSidebarOpen, 
+  setIsSidebarOpen, 
+  toggleTheme, 
+  isDark, 
+  onShowPosts 
+}) => {
   const { user, profile } = useGlobalContext();
+
   return (
     <>
       {/* Overlay */}
@@ -63,6 +72,20 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, toggleTheme, isDark }) => {
             <Clock className="h-5 w-5" />
             <span>Recent</span>
           </a>
+          <div 
+            onClick={() => onShowPosts(false)}
+            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
+          >
+            <List className="h-5 w-5" />
+            <span>My Posts</span>
+          </div>
+          <div 
+            onClick={() => onShowPosts(true)}
+            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
+          >
+            <Globe className="h-5 w-5" />
+            <span>All Posts</span>
+          </div>
         </nav>
 
         {/* Profile options in mobile view */}

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { CATEGORIES, CONDITIONS } from "../assets/postForm";
 import { toast } from 'react-toastify';
 
-export const usePostForm = (user) => {
+export const usePostForm = (user, initialPost = null) => {
   const initialState = {
     title: "",
     description: "",
@@ -22,6 +22,47 @@ export const usePostForm = (user) => {
   const [currentTag, setCurrentTag] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (initialPost) {
+      setIsEditing(true);
+      // Pre-fill form data when editing
+      const fetchPostDetails = async () => {
+        try {
+          // Fetch post images
+          const { data: images } = await supabase
+            .from('post_images')
+            .select('image_url')
+            .eq('post_id', initialPost.id);
+
+          // Fetch post tags
+          const { data: postTags } = await supabase
+            .from('post_tags')
+            .select('tags(name)')
+            .eq('post_id', initialPost.id);
+
+          setFormData({
+            title: initialPost.title,
+            description: initialPost.description,
+            category: initialPost.category,
+            condition: initialPost.condition,
+            location: initialPost.location,
+            pickupDetails: initialPost.pickup_details,
+            images: images?.map(img => img.image_url) || [],
+            tags: postTags?.map(tag => tag.tags.name) || [],
+            contactPreference: initialPost.contact_preference,
+            availabilitySchedule: initialPost.availability_schedule,
+            termsAccepted: initialPost.terms_accepted,
+          });
+        } catch (error) {
+          toast.error("Error al cargar los detalles de la publicación");
+        }
+      };
+
+      fetchPostDetails();
+    }
+  }, [initialPost]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,10 +141,12 @@ export const usePostForm = (user) => {
 
     setIsSubmitting(true);
     try {
-      const { data: post, error: postError } = await supabase
-        .from("posts")
-        .insert([
-          {
+      let postId;
+      if (isEditing) {
+        // Update existing post
+        const { data: updatedPost, error: updateError } = await supabase
+          .from("posts")
+          .update({
             title: formData.title,
             description: formData.description,
             category: formData.category,
@@ -113,18 +156,49 @@ export const usePostForm = (user) => {
             contact_preference: formData.contactPreference,
             availability_schedule: formData.availabilitySchedule,
             terms_accepted: formData.termsAccepted,
-            user_id: user?.id,
-          },
-        ])
-        .select()
-        .single();
+          })
+          .eq('id', initialPost.id)
+          .select()
+          .single();
 
-      if (postError) {
-        toast.error("Error al crear la publicación: " + postError.message);
-        return false;
+        if (updateError) {
+          toast.error("Error al actualizar la publicación: " + updateError.message);
+          return false;
+        }
+
+        postId = initialPost.id;
+
+        // Delete existing images and tags
+        await supabase.from('post_images').delete().eq('post_id', postId);
+        await supabase.from('post_tags').delete().eq('post_id', postId);
+      } else {
+        // Create new post
+        const { data: post, error: postError } = await supabase
+          .from("posts")
+          .insert([
+            {
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              condition: formData.condition,
+              location: formData.location,
+              pickup_details: formData.pickupDetails,
+              contact_preference: formData.contactPreference,
+              availability_schedule: formData.availabilitySchedule,
+              terms_accepted: formData.termsAccepted,
+              user_id: user?.id,
+            },
+          ])
+          .select()
+          .single();
+
+        if (postError) {
+          toast.error("Error al crear la publicación: " + postError.message);
+          return false;
+        }
+
+        postId = post.id;
       }
-
-      const postId = post.id;
 
       // Mostrar toast de progreso para las imágenes
       const imageToastId = toast.loading("Subiendo imágenes...");
@@ -146,12 +220,12 @@ export const usePostForm = (user) => {
         autoClose: 3000
       });
 
-      toast.success("¡Publicación creada exitosamente!", {
+      toast.success(isEditing ? "¡Publicación actualizada exitosamente!" : "¡Publicación creada exitosamente!", {
         autoClose: 3000
       });
       return true;
     } catch (error) {
-      toast.error("Error al crear la publicación: " + error.message);
+      toast.error("Error al procesar la publicación: " + error.message);
       return false;
     } finally {
       setIsSubmitting(false);
@@ -221,12 +295,14 @@ export const usePostForm = (user) => {
     currentTag,
     errors,
     isSubmitting,
+    isEditing,
     handleChange,
     handleImageUpload,
     removeImage,
     addTag,
     removeTag,
     setCurrentTag,
-    submitForm
+    submitForm,
+    setFormData
   };
 };

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-
-import { useTheme } from "../../context/ThemeContext";
-
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
 import PostsGrid from "./PostsGrid";
+import { useTheme } from "../../context/ThemeContext";
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [showAllPosts, setShowAllPosts] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -21,6 +20,10 @@ function Dashboard() {
 
   const closeProfileMenu = () => {
     setIsProfileMenuOpen(false);
+  };
+
+  const handleShowPosts = (allPosts) => {
+    setShowAllPosts(allPosts);
   };
 
   return (
@@ -43,6 +46,7 @@ function Dashboard() {
           setIsSidebarOpen={setIsSidebarOpen}
           toggleTheme={toggleTheme}
           isDark={isDark}
+          onShowPosts={handleShowPosts}
         />
 
         {/* Main Content */}
@@ -54,7 +58,7 @@ function Dashboard() {
             closeProfileMenu={closeProfileMenu}
           />
           {/* Posts Grid */}
-          <PostsGrid />
+          <PostsGrid showAllPosts={showAllPosts} />
         </main>
       </div>
     </div>

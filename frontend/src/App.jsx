@@ -4,7 +4,9 @@ import NotFound from "./Components/NotFound";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PostForm from "./pages/Dashboard/PostForm";
 import { ContextProvider } from "./context/GlobalContext";
-import { Routes, Route, useNavigate, Router } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -29,6 +31,18 @@ function App() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </ContextProvider>
   );
 }
