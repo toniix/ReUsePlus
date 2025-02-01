@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Heart, MessageCircle, MoreHorizontal, X, Tag } from "lucide-react";
-import ImageCarousel from "../../components/ImageCarousel";
+import ImageCarousel from "../../Components/ImageCarousel";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { deletePost } from "../../utils/deletePost";

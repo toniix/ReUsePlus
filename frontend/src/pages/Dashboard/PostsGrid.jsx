@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PostModal from "./PostCardModal";
 import { supabase } from "../../supabase/client";
 import { useGlobalContext } from "../../context/GlobalContext";
-import ImageCarousel from "../../components/ImageCarousel";
+import ImageCarousel from "../../Components/ImageCarousel";
 import { useNavigate } from "react-router-dom";
 import { Edit } from "lucide-react";
 
