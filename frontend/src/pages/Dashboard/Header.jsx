@@ -12,7 +12,12 @@ import { useGlobalContext } from "../../context/GlobalContext";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
+const Header = ({
+  toggleProfileMenu,
+  isProfileMenuOpen,
+  closeProfileMenu,
+  setIsEditProfileOpen,
+}) => {
   const { user, profile } = useGlobalContext(); // Asegúrate de que setUser esté disponible en tu contexto
   const [isDonor, setIsDonor] = useState(false); // Estado para almacenar si el usuario es donante
   const [loading, setLoading] = useState(true); // Estado para manejar la carga inicial
@@ -86,7 +91,7 @@ const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
           <Link to="/dashboard/post/new">
             <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg">
               <Gift className="h-5 w-5" />
-              <span>Crear publicacion</span>
+              <span>Publicar donación</span>
             </button>
           </Link>
         )}
@@ -130,7 +135,7 @@ const Header = ({ toggleProfileMenu, isProfileMenuOpen, closeProfileMenu }) => {
                   </p>
                 </div>
                 <div className="py-2">
-                  <ProfileOptions />
+                  <ProfileOptions setIsEditProfileOpen={setIsEditProfileOpen} />
                 </div>
               </div>
             </>

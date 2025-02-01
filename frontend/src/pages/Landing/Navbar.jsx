@@ -6,7 +6,7 @@ const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
       <div className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="text-xl sm:text-2xl font-bold text-blue-600">
-            ReciclAyuda
+            ReUse+
           </div>
 
           {/* Mobile menu button */}

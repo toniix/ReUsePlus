@@ -312,11 +312,11 @@ export default function PostForm() {
             )}
 
             {/* Submit Button */}
-            <div className="flex justify-end">
+            <div className="flex space-x-4">
               <button
                 type="button"
                 onClick={() => navigate("/dashboard")}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancelar
               </button>
@@ -324,7 +324,7 @@ export default function PostForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-rose-500 text-white py-3 rounded-lg hover:bg-rose-600 transition-colors focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                className="flex-1 bg-rose-500 text-white py-3 rounded-lg hover:bg-rose-600 transition-colors focus:ring-2 focus:ring-rose-500 focus:outline-none disabled:opacity-50"
               >
                 {isEditing ? "Actualizar Donación" : "Publicar Donación"}
               </button>

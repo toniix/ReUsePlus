@@ -3,6 +3,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
 import PostsGrid from "./PostsGrid";
+import ProfileEdit from "../../Components/ProfileEdit";
 import { useTheme } from "../../context/ThemeContext";
 
 function Dashboard() {
@@ -10,6 +11,7 @@ function Dashboard() {
   const { isDark, toggleTheme } = useTheme();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [showAllPosts, setShowAllPosts] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -47,6 +49,7 @@ function Dashboard() {
           toggleTheme={toggleTheme}
           isDark={isDark}
           onShowPosts={handleShowPosts}
+          setIsEditProfileOpen={setIsEditProfileOpen}
         />
 
         {/* Main Content */}
@@ -56,11 +59,17 @@ function Dashboard() {
             toggleProfileMenu={toggleProfileMenu}
             isProfileMenuOpen={isProfileMenuOpen}
             closeProfileMenu={closeProfileMenu}
+            setIsEditProfileOpen={setIsEditProfileOpen}
           />
           {/* Posts Grid */}
           <PostsGrid showAllPosts={showAllPosts} />
         </main>
       </div>
+
+      {/* Profile Edit Modal */}
+      {isEditProfileOpen && (
+        <ProfileEdit onClose={() => setIsEditProfileOpen(false)} />
+      )}
     </div>
   );
 }

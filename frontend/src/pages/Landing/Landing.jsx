@@ -5,7 +5,6 @@ import Hero from "./Hero";
 import HowWorkIt from "./HowWorkIt";
 import SuccessStories from "./SuccessStories";
 import Contact from "./Contact";
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import Register from "../../Components/Register";
 import Login from "../../Components/Login";
@@ -13,6 +12,7 @@ import Login from "../../Components/Login";
 const Landing = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleOpenLogin = () => {
@@ -27,6 +27,11 @@ const Landing = () => {
     setIsMenuOpen(false);
   };
 
+  const handleShowConfirmation = () => {
+    setShowRegisterModal(false);
+    setShowConfirmationModal(true);
+  };
+
   return (
     <>
       {" "}
@@ -36,7 +41,7 @@ const Landing = () => {
           setIsMenuOpen={setIsMenuOpen}
           isMenuOpen={isMenuOpen}
         />
-        <Hero />
+        <Hero handleOpenRegister={handleOpenRegister} />
         <HowWorkIt />
         <SuccessStories />
         <JoinUs handleOpenRegister={handleOpenRegister} />
@@ -55,7 +60,26 @@ const Landing = () => {
         <Register
           setShowRegisterModal={setShowRegisterModal}
           handleOpenLogin={handleOpenLogin}
+          onSuccessfulRegistration={handleShowConfirmation}
         />
+      )}
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-6">Registro Exitoso</h2>
+            <p className="text-gray-700 mb-6">
+              Tu registro ha sido exitoso. Por favor, revisa tu correo
+              electrónico para confirmar tu cuenta.
+            </p>
+            <button
+              onClick={() => setShowConfirmationModal(false)}
+              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

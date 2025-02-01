@@ -3,12 +3,13 @@ import ProfileOptions from "./ProfileOptions";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { List, Globe } from "react-feather";
 
-const Sidebar = ({ 
-  isSidebarOpen, 
-  setIsSidebarOpen, 
-  toggleTheme, 
-  isDark, 
-  onShowPosts 
+const Sidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  toggleTheme,
+  isDark,
+  onShowPosts,
+  setIsEditProfileOpen,
 }) => {
   const { user, profile } = useGlobalContext();
 
@@ -58,33 +59,35 @@ const Sidebar = ({
         </div>
 
         <nav className="space-y-1">
-          <a
-            href="#"
-            className="flex items-center gap-3 text-rose-600 bg-rose-50 dark:bg-rose-500/10 px-4 py-2 rounded-lg"
+          <div
+            onClick={() => onShowPosts(true)}
+            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
           >
-            <LayoutGrid className="h-5 w-5" />
-            <span>All Donations</span>
-          </a>
-          <a
-            href="#"
-            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
-          >
-            <Clock className="h-5 w-5" />
-            <span>Recent</span>
-          </a>
-          <div 
+            <Globe className="h-5 w-5" />
+            <span>All Posts</span>
+          </div>
+          <div
             onClick={() => onShowPosts(false)}
             className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
           >
             <List className="h-5 w-5" />
             <span>My Posts</span>
           </div>
-          <div 
-            onClick={() => onShowPosts(true)}
-            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
-          >
-            <Globe className="h-5 w-5" />
-            <span>All Posts</span>
+          {/* Sort Options */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              Ordenar por
+            </h3>
+            <div className="space-y-2">
+              <button className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg">
+                <Clock className="h-4 w-4" />
+                Más recientes
+              </button>
+              <button className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg">
+                <LayoutGrid className="h-4 w-4" />
+                Más populares
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -101,7 +104,7 @@ const Sidebar = ({
               </p>
             </div>
           </div>
-          <ProfileOptions />
+          <ProfileOptions setIsEditProfileOpen={setIsEditProfileOpen} />
         </div>
       </aside>
     </>

@@ -55,6 +55,7 @@ const PostsGrid = ({ showAllPosts = false }) => {
   useEffect(() => {
     if (user) {
       fetchPosts();
+      console.log("cargando de nuevo");
     }
   }, [user, showAllPosts]);
 
@@ -80,7 +81,7 @@ const PostsGrid = ({ showAllPosts = false }) => {
             : "No has creado ninguna publicación aún"}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {posts.map((post) => (
             <div
               key={post.id}
@@ -94,21 +95,21 @@ const PostsGrid = ({ showAllPosts = false }) => {
                   images={post.post_images || []}
                   aspectRatio="square"
                   objectFit="cover"
-                  containerClassName="h-full"
+                  containerClassName="w-full h-full"
                 />
               </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 truncate">
                   {post.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                   {post.description}
                 </p>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-2 sm:mt-3 flex flex-wrap gap-1 sm:gap-2">
                   {post.post_tags?.map((tag, index) => (
                     <span
                       key={index}
-                      className="inline-block px-2 py-1 text-xs bg-rose-100 dark:bg-rose-900 text-rose-800 dark:text-rose-200 rounded-full"
+                      className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs bg-rose-100 dark:bg-rose-900 text-rose-800 dark:text-rose-200 rounded-full"
                     >
                       {tag.tags.name}
                     </span>
@@ -118,10 +119,10 @@ const PostsGrid = ({ showAllPosts = false }) => {
               {post.user_id === user.id && (
                 <button
                   onClick={() => handleEditPost(post)}
-                  className="absolute top-2 right-2 bg-rose-500 text-white p-2 rounded-full hover:bg-rose-600 transition-colors"
+                  className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 sm:p-2 rounded-full hover:bg-rose-600 transition-colors"
                   title="Editar publicación"
                 >
-                  <Edit className="h-5 w-5" />
+                  <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               )}
             </div>

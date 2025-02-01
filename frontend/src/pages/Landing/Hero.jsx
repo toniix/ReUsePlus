@@ -1,4 +1,4 @@
-const Hero = () => {
+const Hero = ({ handleOpenRegister }) => {
   return (
     <section
       id="inicio"
@@ -13,12 +13,12 @@ const Hero = () => {
           nueva vida a recursos reutilizables.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <a
-            href="#register"
+          <button
+            onClick={handleOpenRegister}
             className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition duration-300"
           >
             Quiero Donar
-          </a>
+          </button>
           <a
             href="#register"
             className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition duration-300"

@@ -1,8 +1,8 @@
-import React from 'react';
-import Slider from 'react-slick';
+import React from "react";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const NextArrow = ({ onClick }) => (
   <button
@@ -22,14 +22,40 @@ const PrevArrow = ({ onClick }) => (
   </button>
 );
 
-const ImageCarousel = ({ images, aspectRatio = "square", objectFit = "cover", containerClassName = "" }) => {
+const ImageCarousel = ({
+  images,
+  aspectRatio = "square",
+  objectFit = "cover",
+  containerClassName = "",
+}) => {
   if (!images || images.length === 0) {
     return (
-      <div className={`${containerClassName} ${aspectRatio === "auto" ? "" : "aspect-square"}`}>
+      <div
+        className={`${containerClassName} ${
+          aspectRatio === "auto" ? "" : "aspect-square"
+        }`}
+      >
         <img
           src="/placeholder-image.jpg"
           alt="Placeholder"
           className={`w-full h-full object-${objectFit}`}
+        />
+      </div>
+    );
+  }
+
+  // Si solo hay una imagen, renderizar directamente sin Slider
+  if (images.length === 1) {
+    return (
+      <div
+        className={`relative group ${containerClassName} ${
+          aspectRatio === "auto" ? "" : "aspect-square"
+        }`}
+      >
+        <img
+          src={images[0]?.image_url || "/placeholder-image.jpg"}
+          alt="Imagen"
+          className={`w-full h-full object-${objectFit} rounded-t-xl`}
         />
       </div>
     );
@@ -44,26 +70,30 @@ const ImageCarousel = ({ images, aspectRatio = "square", objectFit = "cover", co
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     autoplay: false,
-    adaptiveHeight: false
+    adaptiveHeight: false,
+    className: "h-full w-full",
   };
 
   const aspectRatioClasses = {
     square: "aspect-square",
     portrait: "aspect-[3/4]",
     landscape: "aspect-[4/3]",
-    auto: "h-full"
+    auto: "h-full",
   };
 
   return (
     <div className={`relative group ${containerClassName}`}>
-      <Slider {...settings} className="h-full">
+      <Slider {...settings}>
         {images.map((image, index) => (
-          <div key={index} className={`${aspectRatioClasses[aspectRatio]} w-full h-full`}>
+          <div
+            key={index}
+            className={`${aspectRatioClasses[aspectRatio]} w-full h-full`}
+          >
             <div className="w-full h-full flex items-center justify-center">
               <img
                 src={image?.image_url || "/placeholder-image.jpg"}
                 alt={`Imagen ${index + 1}`}
-                className={`w-full h-full object-${objectFit}`}
+                className={`w-full h-full object-${objectFit} rounded-t-xl`}
               />
             </div>
           </div>
