@@ -10,7 +10,6 @@ export default function ProfileEdit({ onClose }) {
     email: "",
     phone: "",
     location: "",
-    bio: "",
     avatar: "",
   });
   const [avatarFile, setAvatarFile] = useState(null);
@@ -24,7 +23,6 @@ export default function ProfileEdit({ onClose }) {
         email: globalProfile.email || "",
         phone: globalProfile.phone || "",
         location: globalProfile.address || "",
-        bio: globalProfile.bio || "",
         avatar: globalProfile.avatar_url || "",
       });
     }
@@ -53,43 +51,94 @@ export default function ProfileEdit({ onClose }) {
     }
   };
 
-  const uploadAvatar = async () => {
+  const uploadAvatar = async (avatarFile, user, profile) => {
     if (!avatarFile) return profile.avatar;
 
-    const fileExt = avatarFile.name.split(".").pop();
-    const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
+    // Validación del archivo
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    const maxSize = 5 * 1024 * 1024; // 5 MB
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, avatarFile);
-
-    if (uploadError) {
-      console.error("Error uploading avatar:", uploadError);
-      return null;
+    if (!allowedTypes.includes(avatarFile.type)) {
+      throw new Error(
+        "Tipo de archivo no permitido. Solo se permiten imágenes JPG, PNG o GIF."
+      );
     }
 
-    const {
-      data: { publicUrl },
-      error: urlError,
-    } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-    if (urlError) {
-      console.error("Error getting avatar URL:", urlError);
-      return null;
+    if (avatarFile.size > maxSize) {
+      throw new Error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 5MB."
+      );
     }
 
-    return publicUrl;
+    try {
+      // Eliminar el avatar antiguo (si existe)
+      if (profile.avatar && profile.avatar.includes("/avatars/")) {
+        const oldAvatarPath = profile.avatar.split("/avatars/").pop();
+        const { error: deleteError } = await supabase.storage
+          .from("avatars")
+          .remove([oldAvatarPath]);
+
+        if (deleteError) {
+          console.error("Error deleting old avatar:", deleteError);
+          // Don't throw, as this might not be a critical failure
+        }
+      }
+      ar;
+      // Subir el nuevo avatar
+      const fileExt = avatarFile.name.split(".").pop();
+      const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Log file details for debugging
+      console.log("Uploading file:", {
+        name: avatarFile.name,
+        type: avatarFile.type,
+        size: avatarFile.size,
+        path: filePath,
+      });
+
+      const { data, error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, avatarFile);
+
+      if (uploadError) {
+        console.error("Supabase upload error:", uploadError);
+        throw new Error(`No se pudo subir el avatar: ${uploadError.message}`);
+      }
+
+      // Obtener la URL pública
+      const {
+        data: { publicUrl },
+        error: urlError,
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      if (urlError) {
+        console.error("Error getting public URL:", urlError);
+        throw new Error("No se pudo obtener la URL del avatar.");
+      }
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Detailed avatar upload error:", error);
+      throw error;
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!profile.fullName.trim()) newErrors.fullName = "El nombre es requerido";
-    if (!profile.email.trim()) newErrors.email = "El email es requerido";
     if (!profile.phone.trim()) newErrors.phone = "El teléfono es requerido";
     if (!profile.location.trim())
       newErrors.location = "La ubicación es requerida";
+
+    // Validación del formato del correo electrónico (si es editable)
+    if (
+      profile.email.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)
+    ) {
+      newErrors.email = "El correo electrónico no es válido";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -102,25 +151,34 @@ export default function ProfileEdit({ onClose }) {
     setIsLoading(true);
 
     try {
-      const avatarUrl = await uploadAvatar();
+      // Verifica si hay un archivo de avatar antes de subirlo
+      let avatarUrl = profile.avatar; // Usa el avatar actual por defecto
+      if (avatarFile) {
+        avatarUrl = await uploadAvatar(avatarFile, user, profile); // Pasa los parámetros necesarios
+      }
 
+      // Actualiza el perfil en Supabase
       const { error } = await supabase
         .from("profiles")
         .update({
           full_name: profile.fullName,
           phone: profile.phone,
           address: profile.location,
-          bio: profile.bio,
-          avatar_url: avatarUrl || profile.avatar,
+          avatar_url: avatarUrl, // Usa la URL del nuevo avatar o la actual
         })
         .eq("id", user.id);
 
       if (error) throw error;
 
+      // Cierra el formulario
       onClose();
     } catch (error) {
       console.error("Error updating profile:", error);
-      setErrors({ general: "No se pudo actualizar el perfil" });
+      setErrors({
+        general:
+          error.message ||
+          "No se pudo actualizar el perfil. Inténtalo de nuevo.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -166,7 +224,7 @@ export default function ProfileEdit({ onClose }) {
                   Foto de perfil
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  JPG o PNG. Máximo 1MB.
+                  JPG o PNG. Máximo 5MB.
                 </p>
               </div>
             </div>
@@ -290,78 +348,6 @@ export default function ProfileEdit({ onClose }) {
                 )}
               </div>
             </div>
-
-            {/* Bio */}
-            <div>
-              <label
-                htmlFor="bio"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Biografía
-              </label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={profile.bio}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-
-            {/* Notification Preferences
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Preferencias de notificación
-              </h3>
-              <div className="space-y-2">
-                {Object.entries(profile.notificationPreferences).map(
-                  ([key, value]) => (
-                    <label key={key} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={() => handleNotificationChange(key)}
-                        className="rounded border-gray-300 text-rose-600 focus:ring-rose-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                        {key === "email"
-                          ? "Notificaciones por email"
-                          : key === "push"
-                          ? "Notificaciones push"
-                          : "Notificaciones de mensajes"}
-                      </span>
-                    </label>
-                  )
-                )}
-              </div>
-            </div> */}
-
-            {/* Privacy Settings
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Configuración de privacidad
-              </h3>
-              <div className="space-y-2">
-                {Object.entries(profile.privacySettings).map(([key, value]) => (
-                  <label key={key} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={value}
-                      onChange={() => handlePrivacyChange(key)}
-                      className="rounded border-gray-300 text-rose-600 focus:ring-rose-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                      {key === "showEmail"
-                        ? "Mostrar email en perfil público"
-                        : key === "showPhone"
-                        ? "Mostrar teléfono en perfil público"
-                        : "Mostrar ubicación en perfil público"}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div> */}
 
             {/* Action Buttons */}
             <div className="flex gap-4">

@@ -23,6 +23,12 @@ function Dashboard() {
   const closeProfileMenu = () => {
     setIsProfileMenuOpen(false);
   };
+  // Efecto para cerrar el menú de perfil cuando se cierra el sidebar
+  useEffect(() => {
+    if (!isSidebarOpen) {
+      setIsProfileMenuOpen(false);
+    }
+  }, [isSidebarOpen]);
 
   const handleShowPosts = (allPosts) => {
     setShowAllPosts(allPosts);
@@ -50,6 +56,8 @@ function Dashboard() {
           isDark={isDark}
           onShowPosts={handleShowPosts}
           setIsEditProfileOpen={setIsEditProfileOpen}
+          isProfileMenuOpen={isProfileMenuOpen}
+          toggleProfileMenu={toggleProfileMenu}
         />
 
         {/* Main Content */}

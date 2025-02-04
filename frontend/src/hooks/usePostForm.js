@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
-import { CATEGORIES, CONDITIONS } from "../assets/postForm";
+import { CATEGORIES, CONDITIONS } from "../utils/postForm";
 import { toast } from 'react-toastify';
 
 export const usePostForm = (user, initialPost = null) => {

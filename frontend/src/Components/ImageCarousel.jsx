@@ -1,106 +1,68 @@
-import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const NextArrow = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
-  >
-    <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-  </button>
-);
+function ImageCarousel({ images }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-const PrevArrow = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
-  >
-    <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-  </button>
-);
-
-const ImageCarousel = ({
-  images,
-  aspectRatio = "square",
-  objectFit = "cover",
-  containerClassName = "",
-}) => {
-  if (!images || images.length === 0) {
-    return (
-      <div
-        className={`${containerClassName} ${
-          aspectRatio === "auto" ? "" : "aspect-square"
-        }`}
-      >
-        <img
-          src="/placeholder-image.jpg"
-          alt="Placeholder"
-          className={`w-full h-full object-${objectFit}`}
-        />
-      </div>
-    );
-  }
-
-  // Si solo hay una imagen, renderizar directamente sin Slider
-  if (images.length === 1) {
-    return (
-      <div
-        className={`relative group ${containerClassName} ${
-          aspectRatio === "auto" ? "" : "aspect-square"
-        }`}
-      >
-        <img
-          src={images[0]?.image_url || "/placeholder-image.jpg"}
-          alt="Imagen"
-          className={`w-full h-full object-${objectFit} rounded-t-xl`}
-        />
-      </div>
-    );
-  }
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    autoplay: false,
-    adaptiveHeight: false,
-    className: "h-full w-full",
+  const nextImage = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
-  const aspectRatioClasses = {
-    square: "aspect-square",
-    portrait: "aspect-[3/4]",
-    landscape: "aspect-[4/3]",
-    auto: "h-full",
+  const prevImage = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToImage = (index, e) => {
+    e.stopPropagation();
+    setCurrentIndex(index);
   };
 
   return (
-    <div className={`relative group ${containerClassName}`}>
-      <Slider {...settings}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${aspectRatioClasses[aspectRatio]} w-full h-full`}
+    <div className="relative h-48 group">
+      <img
+        src={images[currentIndex]}
+        alt={`Image ${currentIndex + 1}`}
+        className="w-full h-full object-cover rounded-t-xl"
+      />
+
+      {/* Navigation arrows */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prevImage}
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           >
-            <div className="w-full h-full flex items-center justify-center">
-              <img
-                src={image?.image_url || "/placeholder-image.jpg"}
-                alt={`Imagen ${index + 1}`}
-                className={`w-full h-full object-${objectFit} rounded-t-xl`}
-              />
-            </div>
-          </div>
-        ))}
-      </Slider>
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={nextImage}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </>
+      )}
+
+      {/* Image counter and dots */}
+      {images.length > 1 && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center items-center gap-1.5">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => goToImage(index, e)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                index === currentIndex
+                  ? "bg-white scale-125"
+                  : "bg-white/60 hover:bg-white/80"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default ImageCarousel;

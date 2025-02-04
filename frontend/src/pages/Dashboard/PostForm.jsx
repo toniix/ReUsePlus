@@ -1,6 +1,6 @@
 import { AlertCircle, MapPin } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CATEGORIES, CONDITIONS } from "../../assets/postForm";
+import { CATEGORIES, CONDITIONS } from "../../utils/postForm";
 import { usePostForm } from "../../hooks/usePostForm";
 import { ImageUpload } from "../../Components/PostForm/ImageUpload";
 import { TagInput } from "../../Components/PostForm/TagInput";
