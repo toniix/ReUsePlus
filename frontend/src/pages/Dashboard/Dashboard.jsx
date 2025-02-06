@@ -12,6 +12,7 @@ function Dashboard() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [showAllPosts, setShowAllPosts] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -32,6 +33,13 @@ function Dashboard() {
 
   const handleShowPosts = (allPosts) => {
     setShowAllPosts(allPosts);
+  };
+
+  const handlePostDeleted = (deletedPostId) => {
+    // Actualizar el estado de posts eliminando el post específico
+    setPosts((currentPosts) =>
+      currentPosts.filter((post) => post.id !== deletedPostId)
+    );
   };
 
   return (
@@ -70,7 +78,11 @@ function Dashboard() {
             setIsEditProfileOpen={setIsEditProfileOpen}
           />
           {/* Posts Grid */}
-          <PostsGrid showAllPosts={showAllPosts} />
+          <PostsGrid
+            showAllPosts={showAllPosts}
+            posts={posts}
+            handlePostDeleted={handlePostDeleted}
+          />
         </main>
       </div>
 

@@ -10,12 +10,11 @@ import {
 } from "lucide-react";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { deletePost } from "../../utils/deletePost";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { formatTimeAgo } from "../../utils/formatTimeAgo";
 
-export default function PostModal({ post, onClose }) {
+export default function PostModal({ post, onClose, onPostDeleted }) {
   //Logica para el carrusel de imagenes
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -64,33 +63,12 @@ export default function PostModal({ post, onClose }) {
 
       // Llamar a la función de actualización de posts si está definida
       if (onPostDeleted) {
-        onPostDeleted();
+        onPostDeleted(post.id); // Pasar el ID del post eliminado
       }
-
-      // Mostrar notificación con Toastify
-      toast.success("Publicación eliminada correctamente", {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
 
       // Navegar al dashboard
       navigate("/dashboard");
     } catch (error) {
-      // Mostrar notificación de error con Toastify
-      toast.error("Hubo un problema al eliminar la publicación", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
       console.error("Error deleting post:", error);
     }
   };

@@ -55,8 +55,22 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-8 max-w-md w-full">
           <h2 className="text-2xl font-bold mb-6">Iniciar Sesión</h2>
-          {error && <div className="alert alert-danger">{error}</div>}
-          {success && <div className="alert alert-success">{success}</div>}
+          {error && (
+            <div
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
+            >
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
+          {success && (
+            <div
+              className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
+            >
+              <span className="block sm:inline">{success}</span>
+            </div>
+          )}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <label className="block text-gray-700 mb-2">Email</label>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Camera } from 'lucide-react';
+import React from "react";
+import { X, Camera } from "lucide-react";
 
 export const ImageUpload = ({ images, onUpload, onRemove, error }) => {
   return (
@@ -8,21 +8,27 @@ export const ImageUpload = ({ images, onUpload, onRemove, error }) => {
         Images (Max 5)
       </label>
       <div className="flex flex-wrap gap-2">
-        {images.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              src={image}
-              alt={`Upload ${index + 1}`}
-              className="w-24 h-24 object-cover rounded"
-            />
-            <button
-              onClick={() => onRemove(index)}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        ))}
+        {images.map((image, index) => {
+          // Generar URL para archivos locales
+          const imageUrl =
+            image instanceof File ? URL.createObjectURL(image) : image;
+
+          return (
+            <div key={index} className="relative">
+              <img
+                src={imageUrl}
+                alt={`Upload ${index + 1}`}
+                className="w-24 h-24 object-cover rounded"
+              />
+              <button
+                onClick={() => onRemove(index)}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          );
+        })}
         {images.length < 5 && (
           <label className="w-24 h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-gray-400">
             <input

@@ -3,7 +3,6 @@ import PostModal from "./PostCardModal";
 import { supabase } from "../../supabase/client";
 import { useGlobalContext } from "../../context/GlobalContext";
 import ImageCarousel from "../../Components/ImageCarousel";
-import { useNavigate } from "react-router-dom";
 import { MoreHorizontal, Heart, MessageCircle } from "lucide-react";
 import getStatusStyles from "../../utils/getStatusStyles";
 import { formatTimeAgo } from "../../utils/formatTimeAgo";
@@ -37,22 +36,29 @@ const PostsGrid = ({ showAllPosts = false }) => {
         ascending: false,
       });
 
-      console.log(data);
+      // console.log(data);
       if (error) {
         console.error("Error fetching posts:", error);
         return;
       }
 
       // Transformar los datos para tener una estructura más manejable
-      const processedPosts = data.map((post) => ({
-        ...post,
-        images: post.post_images?.map((img) => img.image_url) || [],
-        tags: post.post_tags?.map((tag) => tag.tags.name) || [],
-        likes: 100, // Implementar lógica de likes si es necesario
-        comments: 10, // Implementar lógica de comentarios si es necesario
-        author: post.profiles?.full_name || "Usuario desconocido",
-        date: formatTimeAgo(post.created_at), // Add formatted date
-      }));
+      const processedPosts = data.map((post) => {
+        // Debugging: log the entire post object
+        console.log("Full Post Object:", post);
+
+        return {
+          ...post,
+          images: post.post_images?.map((img) => img.image_url) || [],
+          tags: post.post_tags?.map((tag) => tag.tags.name) || [],
+          likes: 100, // Implementar lógica de likes si es necesario
+          comments: 10, // Implementar lógica de comentarios si es necesario
+          author: post.profiles?.full_name || "Usuario desconocido",
+          date: formatTimeAgo(post.created_at), // Add formatted date
+          estado: post.estado, // Normalize estado display
+          statusStyles: getStatusStyles(post.estado), // Pre-compute styles
+        };
+      });
 
       setPosts(processedPosts);
     } catch (error) {
@@ -89,7 +95,7 @@ const PostsGrid = ({ showAllPosts = false }) => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative"
               onClick={() => setSelectedPost(post)}
             >
               <ImageCarousel
@@ -104,14 +110,14 @@ const PostsGrid = ({ showAllPosts = false }) => {
                     font-medium 
                     shadow-lg
                     flex items-center gap-1.5
-                    ${getStatusStyles(post.status).container}
-                    ${getStatusStyles(post.status).text}
+                    ${post.statusStyles.container}
+                    ${post.statusStyles.text}
                   `}
                 >
                   <span className="text-lg leading-none">
-                    {getStatusStyles(post.status).icon}
+                    {post.statusStyles.icon}
                   </span>
-                  {/* {post.status.replace("_", " ")} */}
+                  {post.estado}
                 </span>
               </div>
               <div className="p-4">

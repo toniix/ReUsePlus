@@ -3,7 +3,6 @@ import {
   Moon,
   LayoutGrid,
   Clock,
-  UserCircle,
   X,
   ChevronDown,
   ChevronUp,
@@ -13,7 +12,8 @@ import ProfileOptions from "./ProfileOptions";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { List, Globe } from "react-feather";
 import Title from "./Title";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Avatar from "../../Components/Avatar";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -22,12 +22,17 @@ const Sidebar = ({
   isDark,
   onShowPosts,
   setIsEditProfileOpen,
-  isEditProfileOpen,
   isProfileMenuOpen,
   toggleProfileMenu,
 }) => {
   const { user, profile } = useGlobalContext();
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
+
+  // console.log("Profile in Sidebar:", {
+  //   avatar: profile?.avatar,
+  //   avatarType: typeof profile?.avatar,
+  //   avatarExists: !!profile?.avatar,
+  // });
 
   return (
     <>
@@ -89,18 +94,18 @@ const Sidebar = ({
             className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
           >
             <Globe className="h-5 w-5" />
-            <span>All Posts</span>
+            <span>Todos los posts</span>
           </div>
           <div
             onClick={() => onShowPosts(false)}
             className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
           >
             <List className="h-5 w-5" />
-            <span>My Posts</span>
+            <span>Mis publicaciones</span>
           </div>
 
           {/* Filter Sections */}
-          <div className="px-4 space-y-8">
+          <div className="px-4 space-y-8 mt-6">
             {/* Categories */}
             <div>
               <div
@@ -180,11 +185,8 @@ const Sidebar = ({
               className="flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg p-2 transition-colors duration-200"
               onClick={toggleProfileMenu}
             >
-              <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-500/10 flex items-center justify-center">
-                <span className="text-lg font-medium text-rose-600 dark:text-rose-400">
-                  {profile?.full_name?.charAt(0)}
-                </span>
-              </div>
+              <Avatar profile={profile} />
+
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   {profile?.full_name}

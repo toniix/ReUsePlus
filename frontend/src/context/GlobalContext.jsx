@@ -37,7 +37,7 @@ export const ContextProvider = ({ children }) => {
         // Obtener el perfil del usuario desde la tabla "profiles"
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
-          .select("is_donor, full_name")
+          .select("is_donor, full_name, avatar_url, phone, address")
           .eq("id", currentUser.id)
           .single();
 
@@ -49,6 +49,9 @@ export const ContextProvider = ({ children }) => {
         setProfile({
           isDonor: profile?.is_donor || null,
           full_name: profile?.full_name || null,
+          avatar: profile?.avatar_url || "",
+          phone: profile?.phone || null,
+          address: profile?.address || null,
         });
 
         setLoading(false);
@@ -63,6 +66,8 @@ export const ContextProvider = ({ children }) => {
     };
 
     checkUserSession();
+
+    // console.log(profile);
 
     // Escuchar cambios en el estado de autenticación
     const { subscription } = supabase.auth.onAuthStateChange(
@@ -82,7 +87,7 @@ export const ContextProvider = ({ children }) => {
   }, [navigate]);
 
   return (
-    <GlobalContext.Provider value={{ user, loading, profile }}>
+    <GlobalContext.Provider value={{ user, loading, profile, setProfile }}>
       {!loading && children}
     </GlobalContext.Provider>
   );

@@ -2,40 +2,51 @@ import React, { useState, useEffect } from "react";
 import { X, Camera, MapPin, Phone, Mail, AlertCircle } from "lucide-react";
 import { supabase } from "../supabase/client";
 import { useGlobalContext } from "../context/GlobalContext";
+import { successToast, errorToast } from "../utils/toastNotifications";
+import { validateForm } from "../utils/validationEditForm";
 
 export default function ProfileEdit({ onClose }) {
-  const { user, profile: globalProfile } = useGlobalContext();
+  const {
+    user,
+    profile: globalProfile,
+    setProfile: setGlobalProfile,
+  } = useGlobalContext();
+
   const [profile, setProfile] = useState({
     fullName: "",
-    email: "",
+    email: user?.email || "", // Use email from user context
     phone: "",
     location: "",
     avatar: "",
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (globalProfile) {
       setProfile({
         fullName: globalProfile.full_name || "",
-        email: globalProfile.email || "",
+        email: user?.email || "", // Ensure email is set from user context
         phone: globalProfile.phone || "",
         location: globalProfile.address || "",
-        avatar: globalProfile.avatar_url || "",
+        avatar: globalProfile.avatar || "",
       });
     }
-  }, [globalProfile]);
+  }, [globalProfile, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfile((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+
+    // Prevent changing email
+    if (name !== "email") {
+      setProfile((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: "" }));
+      }
     }
   };
 
@@ -51,6 +62,7 @@ export default function ProfileEdit({ onClose }) {
     }
   };
 
+  //SUBIR UN AVATAR
   const uploadAvatar = async (avatarFile, user, profile) => {
     if (!avatarFile) return profile.avatar;
 
@@ -83,11 +95,10 @@ export default function ProfileEdit({ onClose }) {
           // Don't throw, as this might not be a critical failure
         }
       }
-      ar;
       // Subir el nuevo avatar
       const fileExt = avatarFile.name.split(".").pop();
       const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const filePath = `${fileName}`;
 
       // Log file details for debugging
       console.log("Uploading file:", {
@@ -110,7 +121,7 @@ export default function ProfileEdit({ onClose }) {
       const {
         data: { publicUrl },
         error: urlError,
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      } = await supabase.storage.from("avatars").getPublicUrl(filePath);
 
       if (urlError) {
         console.error("Error getting public URL:", urlError);
@@ -124,63 +135,49 @@ export default function ProfileEdit({ onClose }) {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!profile.fullName.trim()) newErrors.fullName = "El nombre es requerido";
-    if (!profile.phone.trim()) newErrors.phone = "El teléfono es requerido";
-    if (!profile.location.trim())
-      newErrors.location = "La ubicación es requerida";
-
-    // Validación del formato del correo electrónico (si es editable)
-    if (
-      profile.email.trim() &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)
-    ) {
-      newErrors.email = "El correo electrónico no es válido";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
 
-    setIsLoading(true);
+    // Validate form before submission
+    if (!validateForm(profile, setErrors)) {
+      return;
+    }
 
     try {
-      // Verifica si hay un archivo de avatar antes de subirlo
-      let avatarUrl = profile.avatar; // Usa el avatar actual por defecto
+      // Subir imagen de perfil si hay una nueva
+      let avatarUrl = profile.avatar;
       if (avatarFile) {
-        avatarUrl = await uploadAvatar(avatarFile, user, profile); // Pasa los parámetros necesarios
+        avatarUrl = await uploadAvatar(avatarFile, user, profile);
       }
 
-      // Actualiza el perfil en Supabase
-      const { error } = await supabase
+      // Actualizar perfil en Supabase
+      const { data, error } = await supabase
         .from("profiles")
         .update({
           full_name: profile.fullName,
-          phone: profile.phone,
           address: profile.location,
-          avatar_url: avatarUrl, // Usa la URL del nuevo avatar o la actual
+          avatar_url: avatarUrl,
+          phone: profile.phone,
         })
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select();
 
       if (error) throw error;
 
-      // Cierra el formulario
+      // Actualizar contexto global
+      setGlobalProfile((prev) => ({
+        ...prev,
+        full_name: profile.fullName,
+        phone: profile.phone,
+        address: profile.location,
+        avatar: avatarUrl,
+      }));
+
+      successToast("Perfil actualizado exitosamente");
       onClose();
     } catch (error) {
       console.error("Error updating profile:", error);
-      setErrors({
-        general:
-          error.message ||
-          "No se pudo actualizar el perfil. Inténtalo de nuevo.",
-      });
-    } finally {
-      setIsLoading(false);
+      errorToast("No se pudo actualizar el perfil");
     }
   };
 
@@ -258,34 +255,22 @@ export default function ProfileEdit({ onClose }) {
                 )}
               </div>
 
-              <div>
+              <div className="mb-4">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="block text-sm font-medium text-gray-700"
                 >
-                  Email
+                  Correo Electrónico
                 </label>
-                <div className="relative">
-                  <Mail className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={profile.email}
-                    onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-                      errors.email
-                        ? "border-red-500"
-                        : "border-gray-300 dark:border-gray-600"
-                    } focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.email}
-                  </p>
-                )}
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={user?.email || ""}
+                  readOnly
+                  disabled
+                  className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm cursor-not-allowed"
+                />
               </div>
 
               <div>
@@ -354,17 +339,15 @@ export default function ProfileEdit({ onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                disabled={isLoading}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 disabled:opacity-50 flex items-center justify-center"
+                className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700"
               >
-                {isLoading ? "Guardando..." : "Guardar cambios"}
+                Guardar cambios
               </button>
             </div>
 

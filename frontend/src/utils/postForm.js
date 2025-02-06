@@ -1,12 +1,19 @@
 export const CATEGORIES = [
-  "Books",
-  "Clothing",
-  "Electronics",
-  "Furniture",
-  "Home & Kitchen",
-  "Toys",
-  "Education",
-  "Other",
+  "Libros",
+  "Ropa",
+  "Tecnologia",
+  "Muebles",
+  "Hogar & Cocina",
+  "Juguetes",
+  "Educación",
+  "Otro",
+  "Videojuegos",
+  "Calzado",
+  "Mascotas",
+  "Belleza",
+  "Bebes",
 ];
 
-export const CONDITIONS = ["New", "Like New", "Good", "Fair"];
+export const CONDITIONS = ["Nuevo", "Como nuevo", "Bueno", "Muy usado"];
+
+export const ESTADOS = ["DISPONIBLE", "RESERVADO", "DONADO"];

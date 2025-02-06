@@ -1,16 +1,10 @@
-import {
-  Search,
-  Filter,
-  ChevronDown,
-  Bell,
-  UserCircle,
-  Gift,
-} from "lucide-react";
+import { Search, Filter, ChevronDown, Bell, Gift } from "lucide-react";
 import ProfileOptions from "./ProfileOptions";
 import { supabase } from "../../supabase/client";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Avatar from "../../Components/Avatar";
 
 const Header = ({
   toggleProfileMenu,
@@ -21,6 +15,7 @@ const Header = ({
   const { user, profile } = useGlobalContext(); // Asegúrate de que setUser esté disponible en tu contexto
   const [isDonor, setIsDonor] = useState(false); // Estado para almacenar si el usuario es donante
   const [loading, setLoading] = useState(true); // Estado para manejar la carga inicial
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Obtener el valor de is_donor desde la tabla profiles
   useEffect(() => {
@@ -72,26 +67,35 @@ const Header = ({
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
-      <div className="relative w-full lg:w-96">
-        <Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+      <div className="flex items-center space-x-2 w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-rose-500 transition-all duration-300">
+        <div className="pl-3 text-gray-400 dark:text-gray-500">
+          <Search className="h-5 w-5" />
+        </div>
         <input
           type="text"
-          placeholder="Search donations..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          placeholder="Buscar donaciones..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-grow py-2 pr-4 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600"
         />
-      </div>
-      <div className="flex items-center gap-4">
-        <button className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
+        <button className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
           <Filter className="h-5 w-5" />
-          <span className="hidden sm:inline">Filter</span>
+          <span className="hidden sm:inline">Filtrar</span>
           <ChevronDown className="h-4 w-4" />
         </button>
-
+      </div>
+      <div className="flex items-center gap-4">
         {isDonor && (
           <Link to="/dashboard/post/new">
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg">
-              <Gift className="h-5 w-5" />
-              <span>Publicar donación</span>
+            <button
+              className="flex items-center gap-4 px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white 
+              font-semibold rounded-xl shadow-md hover:shadow-lg 
+              transform hover:-translate-y-0.5 transition-all duration-300 
+              focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 
+              active:scale-95 group"
+            >
+              <Gift className="h-6 w-6 transition-transform group-hover:rotate-6" />
+              <span className="tracking-wide">Publicar donación</span>
             </button>
           </Link>
         )}
@@ -117,7 +121,13 @@ const Header = ({
             onClick={toggleProfileMenu}
             className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300"
           >
-            <UserCircle className="h-6 w-6" />
+            {profile && (
+              <div className="flex items-center space-x-4">
+                <div onClick={toggleProfileMenu} className="cursor-pointer">
+                  <Avatar profile={profile} />
+                </div>
+              </div>
+            )}
             <ChevronDown className="h-4 w-4" />
           </button>
 

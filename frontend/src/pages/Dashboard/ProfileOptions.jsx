@@ -1,4 +1,4 @@
-import { User, Settings, LogOut, Edit } from "lucide-react";
+import { Settings, LogOut, Edit } from "lucide-react";
 import { supabase } from "../../supabase/client";
 
 const ProfileOptions = ({ setIsEditProfileOpen }) => (

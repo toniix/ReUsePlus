@@ -13,7 +13,7 @@ const getStatusStyles = (status) => {
         text: "text-white dark:text-white",
         icon: "•",
       };
-    case "NO_DISPONIBLE":
+    case "DONADO":
       return {
         container: "bg-gray-500/90 dark:bg-gray-500/80 shadow-gray-500/20",
         text: "text-white dark:text-white",
