@@ -5,14 +5,15 @@ import MobileHeader from "./MobileHeader";
 import PostsGrid from "./PostsGrid";
 import ProfileEdit from "../../Components/ProfileEdit";
 import { useTheme } from "../../context/ThemeContext";
+import { usePostsContext } from "../../context/PostsContext";
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [showAllPosts, setShowAllPosts] = useState(false);
+  const [showAllPosts, setShowAllPosts] = useState(true);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const { fetchPosts } = usePostsContext();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -31,15 +32,14 @@ function Dashboard() {
     }
   }, [isSidebarOpen]);
 
-  const handleShowPosts = (allPosts) => {
-    setShowAllPosts(allPosts);
-  };
+  // Efecto para cargar posts cuando cambia el filtro
+  // useEffect(() => {
+  //   fetchPosts(showAllPosts);
+  // }, [showAllPosts]);
 
-  const handlePostDeleted = (deletedPostId) => {
-    // Actualizar el estado de posts eliminando el post específico
-    setPosts((currentPosts) =>
-      currentPosts.filter((post) => post.id !== deletedPostId)
-    );
+  // Método para cambiar entre posts propios y todos los posts
+  const handleTogglePostsView = () => {
+    setShowAllPosts(!showAllPosts);
   };
 
   return (
@@ -62,10 +62,11 @@ function Dashboard() {
           setIsSidebarOpen={setIsSidebarOpen}
           toggleTheme={toggleTheme}
           isDark={isDark}
-          onShowPosts={handleShowPosts}
           setIsEditProfileOpen={setIsEditProfileOpen}
           isProfileMenuOpen={isProfileMenuOpen}
           toggleProfileMenu={toggleProfileMenu}
+          onTogglePostsView={handleTogglePostsView}
+          showAllPosts={showAllPosts}
         />
 
         {/* Main Content */}
@@ -78,11 +79,7 @@ function Dashboard() {
             setIsEditProfileOpen={setIsEditProfileOpen}
           />
           {/* Posts Grid */}
-          <PostsGrid
-            showAllPosts={showAllPosts}
-            posts={posts}
-            handlePostDeleted={handlePostDeleted}
-          />
+          <PostsGrid showAllPosts={showAllPosts} />
         </main>
       </div>
 

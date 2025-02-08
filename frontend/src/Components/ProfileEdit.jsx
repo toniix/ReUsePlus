@@ -1,183 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { X, Camera, MapPin, Phone, Mail, AlertCircle } from "lucide-react";
-import { supabase } from "../supabase/client";
+import React, { useState } from "react";
+import { X, Camera, MapPin, Phone, AlertCircle } from "lucide-react";
 import { useGlobalContext } from "../context/GlobalContext";
-import { successToast, errorToast } from "../utils/toastNotifications";
-import { validateForm } from "../utils/validationEditForm";
+import { errorToast } from "../utils/toastNotifications";
+import { useProfileForm } from "../hooks/useProfileForm";
+import { uploadAvatar } from "../services/avatarService";
 
 export default function ProfileEdit({ onClose }) {
-  const {
-    user,
-    profile: globalProfile,
-    setProfile: setGlobalProfile,
-  } = useGlobalContext();
-
-  const [profile, setProfile] = useState({
-    fullName: "",
-    email: user?.email || "", // Use email from user context
-    phone: "",
-    location: "",
-    avatar: "",
-  });
+  const { user, profile: globalProfile, updateProfile } = useGlobalContext();
   const [avatarFile, setAvatarFile] = useState(null);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    if (globalProfile) {
-      setProfile({
-        fullName: globalProfile.full_name || "",
-        email: user?.email || "", // Ensure email is set from user context
-        phone: globalProfile.phone || "",
-        location: globalProfile.address || "",
-        avatar: globalProfile.avatar || "",
-      });
-    }
-  }, [globalProfile, user]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Prevent changing email
-    if (name !== "email") {
-      setProfile((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-
-      if (errors[name]) {
-        setErrors((prev) => ({ ...prev, [name]: "" }));
-      }
-    }
-  };
+  const { profile, errors, handleChange, validateProfileForm, setAvatar } =
+    useProfileForm(globalProfile, user);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        // Usar setAvatar para actualizar correctamente
+        setAvatar(event.target.result);
+      };
+      reader.readAsDataURL(file);
       setAvatarFile(file);
-      const imageUrl = URL.createObjectURL(file);
-      setProfile((prev) => ({
-        ...prev,
-        avatar: imageUrl,
-      }));
-    }
-  };
-
-  //SUBIR UN AVATAR
-  const uploadAvatar = async (avatarFile, user, profile) => {
-    if (!avatarFile) return profile.avatar;
-
-    // Validación del archivo
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    const maxSize = 5 * 1024 * 1024; // 5 MB
-
-    if (!allowedTypes.includes(avatarFile.type)) {
-      throw new Error(
-        "Tipo de archivo no permitido. Solo se permiten imágenes JPG, PNG o GIF."
-      );
-    }
-
-    if (avatarFile.size > maxSize) {
-      throw new Error(
-        "El archivo es demasiado grande. El tamaño máximo permitido es 5MB."
-      );
-    }
-
-    try {
-      // Eliminar el avatar antiguo (si existe)
-      if (profile.avatar && profile.avatar.includes("/avatars/")) {
-        const oldAvatarPath = profile.avatar.split("/avatars/").pop();
-        const { error: deleteError } = await supabase.storage
-          .from("avatars")
-          .remove([oldAvatarPath]);
-
-        if (deleteError) {
-          console.error("Error deleting old avatar:", deleteError);
-          // Don't throw, as this might not be a critical failure
-        }
-      }
-      // Subir el nuevo avatar
-      const fileExt = avatarFile.name.split(".").pop();
-      const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Log file details for debugging
-      console.log("Uploading file:", {
-        name: avatarFile.name,
-        type: avatarFile.type,
-        size: avatarFile.size,
-        path: filePath,
-      });
-
-      const { data, error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, avatarFile);
-
-      if (uploadError) {
-        console.error("Supabase upload error:", uploadError);
-        throw new Error(`No se pudo subir el avatar: ${uploadError.message}`);
-      }
-
-      // Obtener la URL pública
-      const {
-        data: { publicUrl },
-        error: urlError,
-      } = await supabase.storage.from("avatars").getPublicUrl(filePath);
-
-      if (urlError) {
-        console.error("Error getting public URL:", urlError);
-        throw new Error("No se pudo obtener la URL del avatar.");
-      }
-
-      return publicUrl;
-    } catch (error) {
-      console.error("Detailed avatar upload error:", error);
-      throw error;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form before submission
-    if (!validateForm(profile, setErrors)) {
+    // Validar formulario antes de enviar
+    const isValid = validateProfileForm();
+    if (!isValid) {
+      errorToast("Por favor, completa todos los campos correctamente");
       return;
     }
 
     try {
-      // Subir imagen de perfil si hay una nueva
       let avatarUrl = profile.avatar;
       if (avatarFile) {
-        avatarUrl = await uploadAvatar(avatarFile, user, profile);
+        avatarUrl = await uploadAvatar(avatarFile, user, globalProfile.avatar);
       }
 
-      // Actualizar perfil en Supabase
-      const { data, error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: profile.fullName,
-          address: profile.location,
-          avatar_url: avatarUrl,
-          phone: profile.phone,
-        })
-        .eq("id", user.id)
-        .select();
-
-      if (error) throw error;
-
-      // Actualizar contexto global
-      setGlobalProfile((prev) => ({
-        ...prev,
+      const updateResult = await updateProfile(user.id, {
         full_name: profile.fullName,
-        phone: profile.phone,
         address: profile.location,
-        avatar: avatarUrl,
-      }));
+        avatar_url: avatarUrl,
+        phone: profile.phone,
+      });
 
-      successToast("Perfil actualizado exitosamente");
-      onClose();
+      if (updateResult) {
+        onClose();
+      } else {
+        errorToast("No se pudo actualizar el perfil");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
-      errorToast("No se pudo actualizar el perfil");
+      errorToast("Ocurrió un error al actualizar el perfil");
     }
   };
 
@@ -258,19 +135,57 @@ export default function ProfileEdit({ onClose }) {
               <div className="mb-4">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                 >
                   Correo Electrónico
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={user?.email || ""}
-                  readOnly
-                  disabled
-                  className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm cursor-not-allowed"
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={user?.email || ""}
+                    readOnly
+                    disabled
+                    className="
+                      mt-1 
+                      block 
+                      w-full 
+                      rounded-md 
+                      border 
+                      border-gray-300 
+                      dark:border-gray-600 
+                      dark:bg-gray-800 
+                      dark:text-gray-200 
+                      focus:ring-blue-500 
+                      focus:border-blue-500 
+                      sm:text-sm 
+                      py-2 
+                      px-3
+                      opacity-60
+                      cursor-not-allowed
+                    "
+                  />
+                  <div
+                    className="
+                      absolute 
+                      inset-y-0 
+                      right-0 
+                      pr-3 
+                      flex 
+                      items-center 
+                      pointer-events-none
+                    "
+                  >
+                    <AlertCircle
+                      className="h-5 w-5 text-gray-400 dark:text-gray-500"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Este campo no puede ser modificado
+                </p>
               </div>
 
               <div>

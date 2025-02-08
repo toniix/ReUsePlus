@@ -28,6 +28,9 @@ const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
             <a href="#stories" className="text-gray-700 hover:text-blue-600">
               Historias
             </a>
+            <a href="#events" className="text-gray-700 hover:text-blue-600">
+              Eventos
+            </a>
             <a href="#contact" className="text-gray-700 hover:text-blue-600">
               Contacto
             </a>

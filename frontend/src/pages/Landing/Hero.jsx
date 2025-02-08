@@ -17,7 +17,7 @@ const Hero = ({ handleOpenRegister }) => {
             onClick={handleOpenRegister}
             className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition duration-300"
           >
-            Quiero Donar
+            Empieza a Donar
           </button>
           <a
             href="#register"

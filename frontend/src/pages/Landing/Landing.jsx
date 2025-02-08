@@ -8,7 +8,8 @@ import Contact from "./Contact";
 import { useState } from "react";
 import Register from "../../Components/Register";
 import Login from "../../Components/Login";
-
+import Events from "./Events";
+import Donations from "./Donations";
 const Landing = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -42,8 +43,13 @@ const Landing = () => {
           isMenuOpen={isMenuOpen}
         />
         <Hero handleOpenRegister={handleOpenRegister} />
+        <Donations
+          handleOpenLogin={handleOpenLogin}
+          handleOpenRegister={handleOpenRegister}
+        />
         <HowWorkIt />
         <SuccessStories />
+        <Events handleOpenRegister={handleOpenRegister} />
         <JoinUs handleOpenRegister={handleOpenRegister} />
         <Contact />
         <Footer />

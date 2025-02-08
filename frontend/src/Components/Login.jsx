@@ -1,7 +1,8 @@
-import { supabase } from "../supabase/client";
 import { useState } from "react";
+import { useGlobalContext } from "../context/GlobalContext";
 
 const Login = ({ setShowLoginModal, handleOpenRegister }) => {
+  const { login } = useGlobalContext();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,32 +25,21 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
 
     const { email, password } = formData;
 
-    // Validación básica
-    if (!email || !password) {
-      setError("Por favor, completa todos los campos.");
-      return;
-    }
+    // Usar la función login del contexto global
+    const result = await login(email, password);
 
-    try {
-      // Autenticación en Supabase
-      const { data, error: authError } = await supabase.auth.signInWithPassword(
-        {
-          email,
-          password,
-        }
-      );
-
-      if (authError) throw new Error(authError.message);
-
+    if (result.success) {
       setSuccess("Inicio de sesión exitoso. ¡Bienvenido!");
       setFormData({
         email: "",
         password: "",
       });
-    } catch (error) {
-      setError(error.message);
+      setShowLoginModal(false);
+    } else {
+      setError(result.error);
     }
   };
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -7,14 +7,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
+  Trash2,
+  Edit,
 } from "lucide-react";
 import { useGlobalContext } from "../../context/GlobalContext";
-import { deletePost } from "../../utils/deletePost";
+import { usePostsContext } from "../../context/PostsContext";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { formatTimeAgo } from "../../utils/formatTimeAgo";
 
-export default function PostModal({ post, onClose, onPostDeleted }) {
+export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
   //Logica para el carrusel de imagenes
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -36,8 +38,10 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
 
   // Logica para el borrado de posts
   const { user } = useGlobalContext();
+  const { deletePost } = usePostsContext();
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (!post) return null;
 
@@ -47,42 +51,56 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
     navigate("/dashboard/post/new", { state: { postToEdit: post } });
   };
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
   };
 
   const handleDeletePost = async () => {
-    try {
-      await deletePost(post.id);
+    setIsDeleting(true);
 
+    const result = await deletePost(post.id, user.id);
+
+    if (result) {
       // Cerrar el modal de confirmación
       closeDeleteModal();
 
-      // Cerrar el modal principal
+      // Cerrar el modal actual
       onClose();
-
-      // Llamar a la función de actualización de posts si está definida
-      if (onPostDeleted) {
-        onPostDeleted(post.id); // Pasar el ID del post eliminado
-      }
 
       // Navegar al dashboard
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Error deleting post:", error);
     }
+
+    setIsDeleting(false);
+  };
+
+  const renderDeleteConfirmationModal = () => {
+    return (
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeletePost}
+        isDeleting={isDeleting}
+      />
+    );
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden">
         <div className="relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full z-10"
-          >
-            <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-          </button>
+          <div className="absolute top-4 right-4 flex space-x-2">
+            <button
+              onClick={onClose}
+              className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2">
             {/* Image Section */}
             <div className="relative h-[300px] md:h-[500px]">
@@ -206,15 +224,57 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
                   <div className="space-y-4">
                     <button
                       onClick={handleEditPost}
-                      className="w-full px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200"
+                      className="
+                        w-full 
+                        flex 
+                        items-center 
+                        justify-center 
+                        gap-2 
+                        px-4 
+                        py-3 
+                        bg-rose-50 
+                        dark:bg-rose-900/20 
+                        text-rose-600 
+                        dark:text-rose-400 
+                        rounded-lg 
+                        hover:bg-rose-100 
+                        dark:hover:bg-rose-900/30 
+                        transition-colors 
+                        duration-200 
+                        border 
+                        border-rose-200 
+                        dark:border-rose-800/50
+                      "
                     >
-                      Editar publicación
+                      <Edit className="h-5 w-5" strokeWidth={2} />
+                      <span className="font-medium">Editar publicación</span>
                     </button>
                     <button
-                      onClick={() => setIsDeleteModalOpen(true)}
-                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+                      onClick={openDeleteModal}
+                      className="
+                        w-full 
+                        flex 
+                        items-center 
+                        justify-center 
+                        gap-2 
+                        px-4 
+                        py-3 
+                        bg-red-50 
+                        dark:bg-red-900/20 
+                        text-red-600 
+                        dark:text-red-400 
+                        rounded-lg 
+                        hover:bg-red-100 
+                        dark:hover:bg-red-900/30 
+                        transition-colors 
+                        duration-200 
+                        border 
+                        border-red-200 
+                        dark:border-red-800/50
+                      "
                     >
-                      Eliminar publicación
+                      <Trash2 className="h-5 w-5" strokeWidth={2} />
+                      <span className="font-medium">Eliminar publicación</span>
                     </button>
                   </div>
                 ) : (
@@ -234,11 +294,7 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
           </div>
         </div>
       </div>
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={closeDeleteModal}
-        onConfirm={handleDeletePost}
-      />
+      {renderDeleteConfirmationModal()}
     </div>
   );
 }

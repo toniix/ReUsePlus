@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
-import { CATEGORIES, CONDITIONS, ESTADOS } from "../utils/postForm";
-import { toast } from "react-toastify";
+import { CATEGORIES, CONDITIONS} from "../utils/postForm";
+import { successToast, errorToast } from "../utils/toastNotifications";
 
 export const usePostForm = (user, initialPost = null) => {
   const initialState = {
@@ -61,7 +61,7 @@ export const usePostForm = (user, initialPost = null) => {
           });
         } catch (error) {
           console.error("Detailed error loading post:", error);
-          toast.error("Error al cargar los detalles de la publicación");
+          errorToast("Error al cargar los detalles de la publicación");
         }
       };
 
@@ -154,7 +154,7 @@ export const usePostForm = (user, initialPost = null) => {
 
   const submitForm = async () => {
     if (!validateForm()) {
-      toast.error("Por favor, completa todos los campos requeridos");
+      errorToast("Por favor, completa todos los campos requeridos");
       return false;
     }
 
@@ -181,7 +181,7 @@ export const usePostForm = (user, initialPost = null) => {
           .single();
 
         if (updateError) {
-          toast.error(
+          errorToast(
             "Error al actualizar la publicación: " + updateError.message
           );
           return false;
@@ -214,7 +214,7 @@ export const usePostForm = (user, initialPost = null) => {
           .single();
 
         if (postError) {
-          toast.error("Error al crear la publicación: " + postError.message);
+          errorToast("Error al crear la publicación: " + postError.message);
           return false;
         }
 
@@ -224,26 +224,18 @@ export const usePostForm = (user, initialPost = null) => {
       await uploadImagesToSupabase(postId);
 
       // Mostrar toast de progreso para los tags
-      const tagToastId = toast.loading("Guardando etiquetas...");
+     
       await handleTagsUpload(postId);
-      toast.update(tagToastId, {
-        render: "Etiquetas guardadas correctamente",
-        type: "success",
-        isLoading: false,
-        autoClose: 2000,
-      });
+      
 
-      toast.success(
+      successToast(
         isEditing
           ? "¡Publicación actualizada exitosamente!"
-          : "¡Publicación creada exitosamente!",
-        {
-          autoClose: 2000,
-        }
+          : "¡Publicación creada exitosamente!"
       );
       return true;
     } catch (error) {
-      toast.error("Error al procesar la publicación: " + error.message);
+      errorToast("Error al procesar la publicación: " + error.message);
       return false;
     } finally {
       setIsSubmitting(false);
@@ -252,7 +244,7 @@ export const usePostForm = (user, initialPost = null) => {
 
   const uploadImagesToSupabase = async (postId) => {
     if (formData.images.length > 0) {
-      toast.loading("Subiendo imágenes...");
+      successToast("Subiendo imágenes...");
 
       const uploadedImages = [];
 
@@ -269,8 +261,7 @@ export const usePostForm = (user, initialPost = null) => {
           .upload(fileName, blob);
 
         if (error) {
-          toast.dismiss();
-          toast.error(`Error al subir imagen: ${error.message}`);
+          errorToast(`Error al subir imagen: ${error.message}`);
           throw new Error("Error al subir imagen");
         }
 
@@ -287,13 +278,11 @@ export const usePostForm = (user, initialPost = null) => {
         .insert(uploadedImages);
 
       if (dbError) {
-        toast.dismiss();
-        toast.error(`Error al guardar URLs en la BD: ${dbError.message}`);
+        errorToast(`Error al guardar URLs en la BD: ${dbError.message}`);
         throw new Error("Error al guardar URLs en la BD");
       }
 
-      toast.dismiss();
-      toast.success("Imágenes subidas correctamente");
+      successToast("Imágenes subidas correctamente");
       return uploadedImages;
     }
     return [];

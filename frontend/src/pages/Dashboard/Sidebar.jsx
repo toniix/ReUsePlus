@@ -14,6 +14,7 @@ import { List, Globe } from "react-feather";
 import Title from "./Title";
 import { useState } from "react";
 import Avatar from "../../Components/Avatar";
+import { User, Users } from "lucide-react";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -24,6 +25,8 @@ const Sidebar = ({
   setIsEditProfileOpen,
   isProfileMenuOpen,
   toggleProfileMenu,
+  onTogglePostsView,
+  showAllPosts,
 }) => {
   const { user, profile } = useGlobalContext();
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
@@ -89,7 +92,7 @@ const Sidebar = ({
               </button>
             </div>
           </div>
-          <div
+          {/* <div
             onClick={() => onShowPosts(true)}
             className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
           >
@@ -102,6 +105,19 @@ const Sidebar = ({
           >
             <List className="h-5 w-5" />
             <span>Mis publicaciones</span>
+          </div> */}
+
+          {/* Posts View */}
+          <div
+            onClick={onTogglePostsView}
+            className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-4 py-2 rounded-lg cursor-pointer"
+          >
+            {showAllPosts ? (
+              <User className="h-5 w-5" />
+            ) : (
+              <Users className="h-5 w-5" />
+            )}
+            <span>{showAllPosts ? "Mis Posts" : "Todos los Posts"}</span>
           </div>
 
           {/* Filter Sections */}
