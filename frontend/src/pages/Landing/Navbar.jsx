@@ -5,7 +5,7 @@ const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
     <nav className="bg-white shadow-md fixed w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="text-xl sm:text-2xl font-bold text-blue-600">
+          <div className="text-xl sm:text-2xl font-bold text-[#1565C0]">
             ReUse+
           </div>
 
@@ -19,7 +19,7 @@ const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#inicio" className="text-gray-700 hover:text-blue-600">
+            <a href="#inicio" className="text-[#1976D2] hover:text-[#1565C0]">
               Inicio
             </a>
             <a href="#how" className="text-gray-700 hover:text-blue-600">
@@ -36,7 +36,7 @@ const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
             </a>
             <button
               onClick={handleOpenLogin}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
+              className="bg-[#1976D2] text-white px-4 py-2 rounded-lg hover:bg-[#1565C0] transition flex items-center"
             >
               <FaSignInAlt className="mr-2" />
               Iniciar Sesión

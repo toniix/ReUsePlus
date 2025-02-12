@@ -1,116 +1,130 @@
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, FreeMode } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { donations } from "../../utils/donations";
-import {
-  FaHeart,
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaUsers,
-  FaUser,
-  FaHeartbeat,
-} from "react-icons/fa";
-
+import { Autoplay, FreeMode } from "swiper/modules";
+import { FaHeart, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import "swiper/css";
 import "swiper/css/free-mode";
-import "swiper/css/pagination";
+import { donations } from "../../utils/donations";
 
-const Donations = ({ handleOpenLogin, handleOpenRegister }) => {
+function Donations({ handleOpenRegister }) {
   return (
-    <section
-      id="donations"
-      className="py-8 bg-gradient-to-b from-blue-600 to-blue-500"
-    >
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+    <section id="donations" className="relative py-16 overflow-hidden">
+      {/* Fondo con gradiente usando la nueva paleta */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1976D2] to-[#2196F3] opacity-95" />
+
+      {/* Patrón de fondo con color más claro */}
+      <div
+        className="absolute inset-0 bg-grid-pattern opacity-10"
+        style={{ backgroundColor: "#E3F2FD" }}
+      />
+
+      <div className="relative container mx-auto px-4 sm:px-6">
+        {/* Encabezado de la sección */}
+        <div className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
             Donaciones Disponibles
           </h2>
-          <p className="text-white/80 max-w-2xl mx-auto">
-            Desliza para explorar las donaciones disponibles en tu comunidad
+          <p className="text-lg text-[#E3F2FD] max-w-2xl mx-auto">
+            Explora las donaciones disponibles en tu comunidad y sé parte del
+            cambio
           </p>
         </div>
 
-        <Swiper
-          modules={[Autoplay, FreeMode]}
-          spaceBetween={20}
-          slidesPerView="auto"
-          loop={true}
-          freeMode={true}
-          speed={5000}
-          autoplay={{
-            delay: 0,
-            disableOnInteraction: false,
-          }}
-          className="donations-carousel"
-        >
-          {[...donations, ...donations].map((donation, index) => (
-            <SwiperSlide
-              key={`${donation.id}-${index}`}
-              className="w-[300px] sm:w-[350px]"
+        {/* Carruseles de donaciones */}
+        <div className="space-y-4">
+          {[1, 2].map((row, index) => (
+            <Swiper
+              key={row}
+              modules={[Autoplay, FreeMode]}
+              spaceBetween={16}
+              slidesPerView="auto"
+              loop={true}
+              speed={2000}
+              autoplay={{
+                delay: 1,
+                disableOnInteraction: false,
+                reverseDirection: index === 1,
+              }}
+              className="donations-carousel"
+              breakpoints={{
+                320: { slidesPerView: 1.2, spaceBetween: 12 },
+                640: { slidesPerView: 2.5, spaceBetween: 16 },
+                1024: { slidesPerView: 4.5, spaceBetween: 16 },
+              }}
             >
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="relative">
-                  <img
-                    src={donation.image}
-                    alt={donation.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {donation.category}
-                  </div>
-                </div>
+              {[...donations, ...donations].map((donation, idx) => (
+                <SwiperSlide
+                  key={`${donation.id}-${idx}`}
+                  className="w-[260px]"
+                >
+                  <div
+                    className="group bg-white rounded-lg shadow-sm overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                    onClick={handleOpenRegister}
+                  >
+                    {/* Imagen */}
+                    <div className="relative h-36 overflow-hidden">
+                      <img
+                        src={donation.image}
+                        alt={donation.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <span className="px-2 py-1 bg-[#1976D2] text-white text-xs font-medium rounded-full backdrop-blur-sm">
+                          {donation.category}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">
-                    {donation.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {donation.description}
-                  </p>
+                    {/* Contenido */}
+                    <div className="p-3">
+                      <h3 className="text-sm font-semibold text-[#1565C0] mb-2 line-clamp-1">
+                        {donation.title}
+                      </h3>
 
-                  <div className="space-y-1 mb-3">
-                    <div className="flex items-center text-gray-700">
-                      <FaUser className="w-3 h-3 text-blue-600 mr-2" />
-                      <span className="text-xs">{donation.donor}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <FaMapMarkerAlt className="w-3 h-3 text-blue-600 mr-2" />
-                      <span className="text-xs">{donation.location}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <FaCalendarAlt className="w-3 h-3 text-blue-600 mr-2" />
-                      <span className="text-xs">{donation.date}</span>
+                      {/* Metadatos */}
+                      <div className="space-y-1 mb-3">
+                        <div className="flex items-center text-[#1976D2]">
+                          <FaUser className="w-3 h-3 text-[#42A5F5] mr-1.5" />
+                          <span className="text-xs">{donation.donor}</span>
+                        </div>
+                        <div className="flex items-center text-[#1976D2]">
+                          <FaMapMarkerAlt className="w-3 h-3 text-[#42A5F5] mr-1.5" />
+                          <span className="text-xs line-clamp-1">
+                            {donation.location}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-2 border-t border-[#E3F2FD]">
+                        <div className="flex items-center text-[#1976D2]">
+                          <FaHeart className="w-3 h-3 mr-1" />
+                          <span className="text-xs font-medium">
+                            {donation.interested}
+                          </span>
+                        </div>
+                        <button
+                          onClick={handleOpenRegister}
+                          className="px-2 py-1 bg-[#1976D2] text-white text-xs font-medium rounded-full 
+                                   hover:bg-[#1565C0] transition-colors"
+                        >
+                          Me interesa
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-blue-600">
-                      <FaHeart className="w-4 h-4 mr-1" />
-                      <span className="text-sm font-semibold">
-                        {donation.interested}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleOpenRegister}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition duration-300 text-sm"
-                    >
-                      Me interesa
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           ))}
-        </Swiper>
+        </div>
 
-        <div className="text-center mt-8">
+        {/* CTA */}
+        <div className="text-center mt-10">
           <button
             onClick={handleOpenRegister}
-            className="bg-white text-blue-600 px-8 py-3 rounded-full hover:bg-blue-50 transition duration-300 inline-flex items-center font-semibold"
+            className="inline-flex items-center px-6 py-3 bg-white text-[#1976D2] rounded-full
+                     font-semibold transition-all duration-300
+                     hover:bg-[#E3F2FD] hover:shadow-lg active:scale-95"
           >
             <FaHeart className="mr-2" />
             Quiero donar
@@ -119,6 +133,6 @@ const Donations = ({ handleOpenLogin, handleOpenRegister }) => {
       </div>
     </section>
   );
-};
+}
 
 export default Donations;

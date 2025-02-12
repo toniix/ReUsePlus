@@ -6,9 +6,9 @@ import { successStories } from "../../assets/stories";
 
 const SuccessStories = () => {
   return (
-    <section id="stories" className="py-16">
+    <section id="stories" className="py-16 bg-white">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+        <h2 className="text-3xl font-bold text-center text-[#1565C0] mb-12">
           Historias de Impacto
         </h2>
         <Swiper
@@ -21,7 +21,7 @@ const SuccessStories = () => {
         >
           {successStories.map((story, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="bg-[#E3F2FD] rounded-xl shadow-lg overflow-hidden">
                 <div className="md:flex">
                   <div className="md:w-1/2">
                     <img
@@ -31,10 +31,10 @@ const SuccessStories = () => {
                     />
                   </div>
                   <div className="p-8 md:w-1/2">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                    <h3 className="text-xl font-bold text-[#1565C0] mb-4">
                       {story.title}
                     </h3>
-                    <p className="text-gray-600">{story.description}</p>
+                    <p className="text-[#1976D2]">{story.description}</p>
                   </div>
                 </div>
               </div>

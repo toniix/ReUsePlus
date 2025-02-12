@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PostModal from "./PostCardModal";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { usePostsContext } from "../../context/PostsContext";
-import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import ImageCarousel from "../../Components/ImageCarousel";
 
 const PostsGrid = ({ showAllPosts = true }) => {
@@ -53,6 +53,7 @@ const PostsGrid = ({ showAllPosts = true }) => {
             onClick={() => setSelectedPost(post)}
           >
             <ImageCarousel images={post.images || []} />
+
             <div className="absolute top-3 right-3 z-10">
               <span
                 className={`
@@ -111,8 +112,16 @@ const PostsGrid = ({ showAllPosts = true }) => {
                     <span className="text-sm">{post.comments || 0}</span>
                   </button>
                 </div>
-                <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
-                  <MoreHorizontal className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                <button
+                  className="bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1.5"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent opening post modal
+                    // TODO: Implement interest logic
+                    console.log(`Interested in post ${post.id}`);
+                  }}
+                >
+                  <Heart className="h-3 w-3" />
+                  Me Interesa
                 </button>
               </div>
             </div>

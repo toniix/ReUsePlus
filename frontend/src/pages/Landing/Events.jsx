@@ -38,12 +38,12 @@ const events = [
 
 function Events({ handleOpenRegister }) {
   return (
-    <section id="events" className="py-16 bg-gray-50">
+    <section id="events" className="py-16 bg-[#E3F2FD]">
       <div className="container mx-auto px-4 sm:px-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#1565C0] mb-4">
           Próximos Eventos
         </h2>
-        <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+        <p className="text-[#1976D2] text-center mb-12 max-w-2xl mx-auto">
           Participa en nuestros eventos de donación y ayuda a crear un impacto
           positivo en tu comunidad.
         </p>
@@ -60,32 +60,32 @@ function Events({ handleOpenRegister }) {
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                <div className="absolute top-4 right-4 bg-[#1976D2] text-white px-3 py-1 rounded-full text-sm font-semibold">
                   Próximamente
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3">
+                <h3 className="text-xl font-bold text-[#1565C0] mb-3">
                   {event.title}
                 </h3>
-                <p className="text-gray-600 mb-4">{event.description}</p>
+                <p className="text-[#1976D2] mb-4">{event.description}</p>
                 <div className="space-y-2">
-                  <div className="flex items-center text-gray-700">
-                    <FaCalendarAlt className="w-5 h-5 text-blue-600 mr-2" />
+                  <div className="flex items-center text-[#1976D2]">
+                    <FaCalendarAlt className="w-5 h-5 text-[#1976D2] mr-2" />
                     <span>{event.date}</span>
                   </div>
-                  <div className="flex items-center text-gray-700">
-                    <FaClock className="w-5 h-5 text-blue-600 mr-2" />
+                  <div className="flex items-center text-[#1976D2]">
+                    <FaClock className="w-5 h-5 text-[#1976D2] mr-2" />
                     <span>{event.time}</span>
                   </div>
-                  <div className="flex items-center text-gray-700">
-                    <FaMapMarkerAlt className="w-5 h-5 text-blue-600 mr-2" />
+                  <div className="flex items-center text-[#1976D2]">
+                    <FaMapMarkerAlt className="w-5 h-5 text-[#1976D2] mr-2" />
                     <span>{event.location}</span>
                   </div>
                 </div>
                 <button
                   onClick={handleOpenRegister}
-                  className="mt-6 w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center"
+                  className="mt-6 w-full bg-[#1976D2] text-white px-6 py-2 rounded-lg hover:bg-[#1565C0] transition duration-300"
                 >
                   Participar
                 </button>
