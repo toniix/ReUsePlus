@@ -45,6 +45,7 @@ function App() {
           pauseOnHover
           theme="colored"
         />
+        
       </PostsProvider>
     </GlobalProvider>
   );

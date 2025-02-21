@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Tag, AlertCircle } from 'lucide-react';
 
 export const TagInput = ({ tags, currentTag, onAddTag, onRemoveTag, onTagChange, error }) => {

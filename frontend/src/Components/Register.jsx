@@ -25,7 +25,6 @@ const Register = ({
     address: "",
   });
 
-  // const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,7 +43,7 @@ const Register = ({
       phone: "",
       address: "",
     });
-    // setSuccess("");
+   
 
     // Usar la función de validación
     const validationErrors = validateRegisterForm(formData);
@@ -233,12 +232,6 @@ const Register = ({
                   </p>
                 )}
               </div>
-              {/* <div className="flex items-center">
-                <input type="checkbox" id="terms" className="mr-2" required />
-                <label htmlFor="terms" className="text-sm text-gray-600">
-                  Acepto los términos y condiciones
-                </label>
-              </div> */}
               <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition duration-300"

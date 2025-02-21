@@ -1,4 +1,3 @@
-import React from "react";
 import { X, Camera } from "lucide-react";
 
 export const ImageUpload = ({ images, onUpload, onRemove, error }) => {

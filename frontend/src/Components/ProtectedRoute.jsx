@@ -5,7 +5,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useGlobalContext();
 
   if (loading) {
-    return <div>Cargando...</div>; // O un spinner
+    return <div>Cargando...</div>;
   }
 
   if (!user) {
