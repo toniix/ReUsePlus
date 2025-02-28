@@ -16,8 +16,9 @@ import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { formatTimeAgo } from "../../utils/formatTimeAgo";
 import { ChatDrawer } from "../../Components/chat/ChatDrawer";
+import { usePosts } from "../../hooks/usePosts";
 
-export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
+export default function PostModal({ post, onClose, onPostDeleted }) {
   //Logica para el carrusel de imagenes
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -39,10 +40,12 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
 
   // Logica para el borrado de posts
   const { user } = useGlobalContext();
-  const { deletePost } = usePostsContext();
+  const { deletePost, createReservation } = usePostsContext();
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isReserving, setIsReserving] = useState(false);
+  // const { refreshPosts } = usePosts();
 
   if (!post) return null;
 
@@ -62,17 +65,12 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
 
   const handleDeletePost = async () => {
     setIsDeleting(true);
-
     const result = await deletePost(post.id, user.id);
 
     if (result) {
-      // Cerrar el modal de confirmación
       closeDeleteModal();
-
-      // Cerrar el modal actual
       onClose();
-
-      // Navegar al dashboard
+      onPostDeleted();
       navigate("/dashboard");
     }
 
@@ -105,6 +103,15 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
         console.error("Error al iniciar chat:", error);
       }
     }
+  };
+
+  const handleCancelReservation = async () => {
+    setIsReserving(true);
+    const success = await createReservation(post.id, user.id, post.user_id);
+    if (success) {
+      onClose();
+    }
+    setIsReserving(false);
   };
 
   return (
@@ -181,9 +188,7 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
                     {/* Display author name */}
                     <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2">
                       <span className="font-medium">Publicado por:</span>
-                      <span>
-                        {post.profiles?.full_name || "Usuario desconocido"}
-                      </span>
+                      <span>{post.profiles?.full_name}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <span>{post.category}</span>
@@ -301,10 +306,27 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
                   ) : (
                     <>
                       <div className="space-y-3">
-                        <button className="w-full px-4 py-2.5 bg-rose-500 text-white rounded-lg 
-                          hover:bg-rose-600 transition-colors">
-                          Solicitar donación
-                        </button>
+                        {post.estado === "DISPONIBLE" && (
+                          <button
+                            onClick={handleCancelReservation}
+                            disabled={isReserving}
+                            className={`w-full px-4 py-2.5 bg-rose-500 text-white rounded-lg 
+                              hover:bg-rose-600 transition-colors ${
+                                isReserving
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }`}
+                          >
+                            {isReserving
+                              ? "Enviando solicitud..."
+                              : "Reservar donación"}
+                          </button>
+                        )}
+                        {post.estado === "RESERVADO" && (
+                          <div className="w-full px-4 py-2.5 bg-yellow-100 text-yellow-800 rounded-lg text-center">
+                            Esta donación ya está reservada
+                          </div>
+                        )}
                         <button
                           onClick={() => handleStartChat(post.user_id)}
                           className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 
@@ -329,7 +351,7 @@ export default function PostModal({ post, onClose, onPostDeleted, onEdit }) {
       <ChatDrawer
         ref={chatRef}
         showFloatingButton={false}
-        otherUserName={post.profiles?.full_name || "Usuario desconocido"}
+        otherUserName={post.profiles?.full_name}
         otherUserId={post.user_id}
         postId={post.id}
       />

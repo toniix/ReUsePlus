@@ -1,74 +1,18 @@
 import { createContext, useContext, useState } from "react";
 import { supabase } from "../supabase/client";
-import { formatTimeAgo } from "../utils/formatTimeAgo";
-import getStatusStyles from "../utils/getStatusStyles";
 import { successToast, errorToast } from "../utils/toastNotifications";
-import { useGlobalContext } from "./GlobalContext";
-
+import { usePosts } from "../hooks/usePosts";
+import { fetchPostsService } from "../services/postService";
 const PostsContext = createContext();
+import { useReservations } from "../hooks/useReservations";
 
 export const usePostsContext = () => useContext(PostsContext);
 
 export const PostsProvider = ({ children }) => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const { user } = useGlobalContext();
-
-  const fetchPosts = async (showAllPosts, userId = null) => {
-    try {
-      setLoading(true);
-      let query = supabase
-        .from("posts")
-        .select(
-          `
-          *,
-          profiles (
-            full_name
-          ),
-          post_images (
-            image_url
-          ),
-          post_tags (
-            tags (
-              name
-            )
-          )
-        `
-        )
-        .order("created_at", { ascending: false });
-
-      // Solo filtrar por usuario si se solicita explícitamente y no se quieren todos los posts
-      if (!showAllPosts && userId) {
-        query = query.eq("user_id", userId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      const processedPosts = data.map((post) => ({
-        ...post,
-        images: post.post_images?.map((img) => img.image_url) || [],
-        tags: post.post_tags?.map((tag) => tag.tags?.name) || [],
-        author: post.profiles?.full_name || "Usuario desconocido",
-        date: formatTimeAgo(post.created_at),
-        statusStyles: getStatusStyles(post.estado),
-      }));
-
-      setPosts(processedPosts);
-      return processedPosts;
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      errorToast("Error al cargar las publicaciones");
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { posts, setPosts, refreshPosts } = usePosts();
+  // const { createNewReservation, respondToReservation } = useReservations();
 
   const deletePost = async (postId, currentUserId) => {
-    const start = performance.now();
-
     try {
       // Primero, verificar la propiedad del post
       const { data: postData, error: postError } = await supabase
@@ -126,23 +70,10 @@ export const PostsProvider = ({ children }) => {
 
       // Actualizar estado local de posts
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-
-      const end = performance.now();
-      console.log(
-        `🕒 Tiempo de eliminación de post: ${(end - start).toFixed(2)} ms`
-      );
-
       successToast("Publicación eliminada correctamente");
 
       return true;
     } catch (error) {
-      const end = performance.now();
-      console.log(
-        `🕒 Tiempo de eliminación de post (con error): ${(end - start).toFixed(
-          2
-        )} ms`
-      );
-
       console.error("Error deleting post:", error);
       errorToast("No se pudo eliminar la publicación. Inténtalo de nuevo.");
 
@@ -150,12 +81,110 @@ export const PostsProvider = ({ children }) => {
     }
   };
 
+  // Función para crear una reserva
+  const createReservation = async (postId, userId, ownerId) => {
+    try {
+      // Crear la reserva
+      const { data: reservation, error: reservationError } = await supabase
+        .from("reservations")
+        .insert([
+          {
+            post_id: postId,
+            requester_id: userId,
+            owner_id: ownerId,
+            status: "PENDIENTE",
+          },
+        ])
+        .select()
+        .single();
+
+      if (reservationError) throw reservationError;
+
+      // Crear la notificación para el dueño del post
+      const { data: post } = await supabase
+        .from("posts")
+        .select("user_id")
+        .eq("id", postId)
+        .single();
+
+      if (post) {
+        await supabase.from("notifications").insert([
+          {
+            user_id: post.user_id,
+            type: "RESERVATION_REQUEST",
+            content: "Alguien ha solicitado reservar tu donación",
+            post_id: postId,
+            reservation_id: reservation.id,
+          },
+        ]);
+      }
+
+      successToast("Solicitud de reserva enviada correctamente");
+      await refreshPosts(); // Actualizar después de reservar
+
+      return true;
+    } catch (error) {
+      console.error("Error creating reservation:", error);
+      errorToast("Error al crear la reserva");
+      return false;
+    }
+  };
+
+  const handleReservationResponse = async (reservationId, accepted) => {
+    try {
+      // Actualizar el estado de la reserva
+      const newStatus = accepted ? "ACEPTADA" : "RECHAZADA";
+      const { data: reservation, error: reservationError } = await supabase
+        .from("reservations")
+        .update({ status: newStatus })
+        .eq("id", reservationId)
+        .select()
+        .single();
+
+      if (reservationError) throw reservationError;
+
+      // Si fue aceptada, actualizar el estado del post
+      if (accepted) {
+        const { error: postError } = await supabase
+          .from("posts")
+          .update({ estado: "RESERVADO" })
+          .eq("id", reservation.post_id);
+
+        if (postError) throw postError;
+        await fetchPostsService();
+      }
+
+      // Crear notificación para el usuario que solicitó la reserva
+      await supabase.from("notifications").insert([
+        {
+          user_id: reservation.user_id,
+          type: accepted ? "RESERVATION_ACCEPTED" : "RESERVATION_REJECTED",
+          content: accepted
+            ? "Tu solicitud de reserva ha sido aceptada"
+            : "Tu solicitud de reserva ha sido rechazada",
+          post_id: reservation.post_id,
+          reservation_id: reservationId,
+        },
+      ]);
+
+      successToast(
+        accepted
+          ? "Reserva aceptada correctamente"
+          : "Reserva rechazada correctamente"
+      );
+      return true;
+    } catch (error) {
+      console.error("Error handling reservation:", error);
+      errorToast("Error al procesar la reserva");
+      return false;
+    }
+  };
+
   const value = {
     posts,
-    loading,
-    fetchPosts,
     deletePost,
-    setPosts,
+    createReservation,
+    handleReservationResponse,
   };
 
   return (

@@ -1,31 +1,43 @@
 import React, { useState, useEffect } from "react";
 import PostModal from "./PostCardModal";
 import { useGlobalContext } from "../../context/GlobalContext";
-import { usePostsContext } from "../../context/PostsContext";
 import { Heart, MessageCircle } from "lucide-react";
 import ImageCarousel from "../../Components/ImageCarousel";
+import { usePosts } from "../../hooks/usePosts";
+import { useReservedPosts } from "../../hooks/useReservedPosts";
 
-const PostsGrid = ({ showAllPosts = true }) => {
+const PostsGrid = ({ view }) => {
   const { user } = useGlobalContext();
-  const { posts, loading, fetchPosts } = usePostsContext();
+  const { reservedPosts, loading: loadingReserved } = useReservedPosts(user.id);
   const [selectedPost, setSelectedPost] = useState(null);
+  const { posts, loading, refreshPosts } = usePosts();
 
+  // Actualizar posts cuando cambia la vista
   useEffect(() => {
-    console.log("User:", user); // Para debugging
-    const loadPosts = async () => {
-      if (user) {
-        // Pasar null como userId cuando se quieren mostrar todos los posts
-        await fetchPosts(showAllPosts, user.id);
+    refreshPosts();
+  }, [view, refreshPosts]);
+  // Determinar qué posts mostrar según la vista seleccionada
+  let filteredPosts;
+
+  if (view === "reserved") {
+    filteredPosts = reservedPosts;
+  } else {
+    filteredPosts = posts.filter((post) => {
+      switch (view) {
+        case "mine":
+          // Se asume que en post.user_id está el ID del autor
+          return post.user_id === user.id;
+        case "interested":
+          // Se asume que post.interestedUsers es un array de IDs
+          return post.interestedUsers && post.interestedUsers.includes(user.id);
+        default:
+          // 'all' muestra todos los posts
+          return post.user_id !== user.id;
       }
-    };
-    loadPosts();
-  }, [user, showAllPosts]);
+    });
+  }
 
-  // Para debugging
-  // console.log("Posts:", posts);
-  // console.log("Loading:", loading);
-
-  if (loading) {
+  if (loading || (view === "reserved" && loadingReserved)) {
     return (
       <div className="flex justify-center items-center h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
@@ -33,12 +45,10 @@ const PostsGrid = ({ showAllPosts = true }) => {
     );
   }
 
-  if (!posts || posts.length === 0) {
+  if (!filteredPosts || filteredPosts.length === 0) {
     return (
       <div className="text-center text-gray-500 dark:text-gray-400 p-8">
-        {showAllPosts
-          ? "No hay publicaciones disponibles"
-          : "No has creado ninguna publicación aun"}
+        No hay publicaciones disponibles
       </div>
     );
   }
@@ -46,7 +56,7 @@ const PostsGrid = ({ showAllPosts = true }) => {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <div
             key={post.id}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative"
@@ -133,7 +143,7 @@ const PostsGrid = ({ showAllPosts = true }) => {
         <PostModal
           post={selectedPost}
           onClose={() => setSelectedPost(null)}
-          onPostDeleted={fetchPosts}
+          onPostDeleted={refreshPosts}
         />
       )}
     </>

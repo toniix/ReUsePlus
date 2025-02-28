@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
-import { CATEGORIES, CONDITIONS} from "../utils/postForm";
+import { CATEGORIES, CONDITIONS } from "../utils/postForm";
 import { successToast, errorToast } from "../utils/toastNotifications";
 
 export const usePostForm = (user, initialPost = null) => {
@@ -223,10 +223,7 @@ export const usePostForm = (user, initialPost = null) => {
 
       await uploadImagesToSupabase(postId);
 
-      // Mostrar toast de progreso para los tags
-     
       await handleTagsUpload(postId);
-      
 
       successToast(
         isEditing
