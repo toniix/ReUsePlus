@@ -35,23 +35,27 @@ const Landing = () => {
 
   return (
     <>
-      {" "}
       <div className="min-h-screen bg-white">
-        <Navbar
-          handleOpenLogin={handleOpenLogin}
-          setIsMenuOpen={setIsMenuOpen}
-          isMenuOpen={isMenuOpen}
-        />
-        <Hero handleOpenRegister={handleOpenRegister} />
-        <Donations
-          handleOpenLogin={handleOpenLogin}
-          handleOpenRegister={handleOpenRegister}
-        />
-        <HowWorkIt />
-        <SuccessStories />
-        <Events handleOpenRegister={handleOpenRegister} />
-        <JoinUs handleOpenRegister={handleOpenRegister} />
-        <Contact />
+        <header>
+          <Navbar
+            handleOpenLogin={handleOpenLogin}
+            setIsMenuOpen={setIsMenuOpen}
+            isMenuOpen={isMenuOpen}
+          />
+        </header>
+        <main>
+          <Hero handleOpenRegister={handleOpenRegister} />
+          <Donations
+            handleOpenLogin={handleOpenLogin}
+            handleOpenRegister={handleOpenRegister}
+          />
+          <HowWorkIt />
+          <SuccessStories />
+          <Events handleOpenRegister={handleOpenRegister} />
+          <JoinUs handleOpenRegister={handleOpenRegister} />
+          <Contact />
+        </main>
+
         <Footer />
       </div>
       {/* Login Modal */}

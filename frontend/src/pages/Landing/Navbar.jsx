@@ -1,13 +1,17 @@
 import { FaSignInAlt, FaBars, FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ handleOpenLogin, setIsMenuOpen, isMenuOpen }) => {
   return (
     <nav className="bg-white shadow-md fixed w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="text-xl sm:text-2xl font-bold text-[#1565C0]">
+          <Link
+            to={"/"}
+            className="text-xl sm:text-2xl font-bold text-[#1565C0]"
+          >
             ReUse+
-          </div>
+          </Link>
 
           {/* Mobile menu button */}
           <button

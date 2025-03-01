@@ -16,7 +16,10 @@ function Hero({ handleOpenRegister }) {
   ];
 
   return (
-    <div className="relative min-h-screen flex items-center overflow-hidden">
+    <div
+      id="inicio"
+      className="relative min-h-screen flex items-center overflow-hidden"
+    >
       {/* Fondo con gradiente y overlay - Ajustado z-index */}
       <div className="absolute inset-0 z-0">
         <img

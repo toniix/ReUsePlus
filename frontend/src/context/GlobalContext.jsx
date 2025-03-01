@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, createContext } from "react";
+import { useEffect, useState, useContext, createContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import { successToast, errorToast } from "../utils/toastNotifications";
@@ -10,7 +10,7 @@ export const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
-
+  const publicRoutes = ["/", "/nosotros"];
   // Función para actualizar el perfil (ya existente)
   const updateProfile = async (userId, userData) => {
     try {
@@ -32,10 +32,11 @@ export const GlobalProvider = ({ children }) => {
       // Actualizar inmediatamente el estado local del perfil
       setProfile((prevProfile) => ({
         ...prevProfile,
-        full_name: userData.full_name || prevProfile.full_name,
-        address: userData.address || prevProfile.address,
-        avatar: userData.avatar_url || prevProfile.avatar,
-        phone: userData.phone || prevProfile.phone,
+        ...userData, // Esto sobrescribe solo los campos proporcionados en userData
+        // full_name: userData.full_name || prevProfile.full_name,
+        // address: userData.address || prevProfile.address,
+        // avatar: userData.avatar_url || prevProfile.avatar,
+        // phone: userData.phone || prevProfile.phone,
       }));
 
       successToast("Perfil actualizado exitosamente");
@@ -156,7 +157,11 @@ export const GlobalProvider = ({ children }) => {
         const currentUser = sessionData?.session?.user || null;
 
         if (!currentUser) {
-          navigate("/");
+          // Solo redireccionar si no es una ruta pública
+
+          if (!publicRoutes.includes(window.location.pathname)) {
+            navigate("/");
+          }
           setLoading(false);
           return;
         }
@@ -192,11 +197,19 @@ export const GlobalProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user || null);
-        if (!session?.user) {
+
+        // Si no hay usuario y la ruta no es pública, redirigir a "/"
+        if (
+          !session?.user &&
+          !publicRoutes.includes(window.location.pathname)
+        ) {
           navigate("/");
-        } else if (window.location.pathname === "/") {
+        }
+        // Si hay usuario y la ruta actual es "/", redirigir a "/dashboard"
+        else if (session?.user && window.location.pathname === "/") {
           navigate("/dashboard");
         }
+        // No hacer nada en otros casos (evita el bucle)
       }
     );
 
@@ -205,16 +218,19 @@ export const GlobalProvider = ({ children }) => {
     };
   }, [navigate]);
 
-  const value = {
-    user,
-    loading,
-    profile,
-    updateProfile,
-    logout, // Nueva función
-    register, // Nueva función
-    login, // Nueva función
-    setProfile,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      profile,
+      updateProfile,
+      logout,
+      register,
+      login,
+      setProfile,
+    }),
+    [user, loading, profile]
+  );
 
   return (
     <GlobalContext.Provider value={value}>

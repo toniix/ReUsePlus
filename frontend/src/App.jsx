@@ -8,13 +8,33 @@ import { PostsProvider } from "./context/PostsContext";
 import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Nosotros from "./Components/Nosotros";
 
 function App() {
   return (
     <GlobalProvider>
       <PostsProvider>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          {/* Rutas públicas */}
+          {/* <Route path="/" element={<Landing />} />
+          <Route path="/nosotros" element={<Nosotros />} /> */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Landing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/nosotros"
+            element={
+              <ProtectedRoute>
+                <Nosotros />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/dashboard"
             element={
@@ -45,7 +65,6 @@ function App() {
           pauseOnHover
           theme="colored"
         />
-        
       </PostsProvider>
     </GlobalProvider>
   );
