@@ -13,7 +13,7 @@ import ProfileOptions from "./ProfileOptions";
 import { useGlobalContext } from "../../context/GlobalContext";
 import Title from "./Title";
 import { useState } from "react";
-import Avatar from "../../Components/Avatar";
+import Avatar from "./Avatar";
 import { User, Users } from "lucide-react";
 
 const Sidebar = ({

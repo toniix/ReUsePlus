@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Heart,
   MessageCircle,
@@ -17,6 +17,7 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { formatTimeAgo } from "../../utils/formatTimeAgo";
 import { ChatDrawer } from "../../Components/chat/ChatDrawer";
 import { usePosts } from "../../hooks/usePosts";
+import { useReservations } from "../../hooks/useReservations";
 
 export default function PostModal({ post, onClose, onPostDeleted }) {
   //Logica para el carrusel de imagenes
@@ -113,6 +114,18 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
     }
     setIsReserving(false);
   };
+
+  const { checkPendingReservationStatus } = useReservations();
+  const [isPendingReservation, setIsPendingReservation] = useState(false);
+
+  useEffect(() => {
+    const checkReservationStatus = async () => {
+      const pending = await checkPendingReservationStatus(post.id, user.id);
+      setIsPendingReservation(pending);
+    };
+
+    checkReservationStatus();
+  }, [post.id, user.id]);
 
   return (
     <>
@@ -309,16 +322,18 @@ export default function PostModal({ post, onClose, onPostDeleted }) {
                         {post.estado === "DISPONIBLE" && (
                           <button
                             onClick={handleCancelReservation}
-                            disabled={isReserving}
+                            disabled={isReserving || isPendingReservation}
                             className={`w-full px-4 py-2.5 bg-rose-500 text-white rounded-lg 
                               hover:bg-rose-600 transition-colors ${
-                                isReserving
+                                isReserving || isPendingReservation
                                   ? "opacity-50 cursor-not-allowed"
                                   : ""
                               }`}
                           >
                             {isReserving
                               ? "Enviando solicitud..."
+                              : isPendingReservation
+                              ? "Reserva solicitada, esperando confirmación"
                               : "Reservar donación"}
                           </button>
                         )}

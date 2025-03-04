@@ -20,7 +20,9 @@ const useNotifications = (userId) => {
       else {
         setNotifications(data);
         // Contar notificaciones no leídas
-        const unread = data.filter(notification => !notification.is_read).length;
+        const unread = data.filter(
+          (notification) => !notification.is_read
+        ).length;
         setUnreadCount(unread);
       }
     };
@@ -32,7 +34,12 @@ const useNotifications = (userId) => {
       .channel("notifications")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications" },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
           console.log("Nueva notificación:", payload.new);
           setNotifications((prev) => [payload.new, ...prev]); // Agregar nueva notificación a la lista

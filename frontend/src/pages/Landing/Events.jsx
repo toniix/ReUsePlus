@@ -43,7 +43,7 @@ function Events({ handleOpenRegister }) {
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#1565C0] mb-4">
           Próximos Eventos
         </h2>
-        <p className="text-[#1976D2] text-center mb-12 max-w-2xl mx-auto">
+        <p className="text-[#1976D2] text-center mb-5 max-w-2xl mx-auto">
           Participa en nuestros eventos de donación y ayuda a crear un impacto
           positivo en tu comunidad.
         </p>

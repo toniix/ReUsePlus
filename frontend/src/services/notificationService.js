@@ -1,28 +1,26 @@
 import { supabase } from "../supabase/client";
 
 export const createReservationNotification = async (
-  userId,
+  userId, // Cambiamos ownerId a userId para que sea más genérico
   postId,
   reservationId,
   type
 ) => {
   try {
-    const notificationData = {
-      user_id: userId,
-      type,
-      post_id: postId,
-      reservation_id: reservationId,
-      content: getNotificationContent(type),
-    };
-
-    const { data, error } = await supabase
-      .from("notifications")
-      .insert([notificationData]);
+    const { data, error } = await supabase.from("notifications").insert([
+      {
+        user_id: userId, // Asegurarse de que la notificación se envíe al usuario correcto
+        post_id: postId,
+        reservation_id: reservationId,
+        type,
+        is_read: false,
+      },
+    ]);
 
     if (error) throw error;
-    return { notification: data, error: null };
+    return { data, error: null };
   } catch (error) {
-    return { notification: null, error };
+    return { data: null, error };
   }
 };
 

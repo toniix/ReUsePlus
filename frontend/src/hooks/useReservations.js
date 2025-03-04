@@ -1,6 +1,7 @@
 import {
   createReservation,
   handleReservationResponse,
+  checkPendingReservation,
 } from "../services/reservationService";
 import { createReservationNotification } from "../services/notificationService";
 import { successToast, errorToast } from "../utils/toastNotifications";
@@ -19,7 +20,7 @@ export const useReservations = () => {
       if (error) throw error;
 
       await createReservationNotification(
-        ownerId,
+        ownerId, // Asegurarse de que la notificación solo se envíe al propietario
         postId,
         reservation.id,
         "RESERVATION_REQUEST"
@@ -44,7 +45,7 @@ export const useReservations = () => {
       if (error) throw error;
 
       await createReservationNotification(
-        reservation.requester_id,
+        reservation.requester_id, // Asegurémonos de que la notificación se envíe al solicitante
         reservation.post_id,
         reservationId,
         accepted ? "RESERVATION_ACCEPTED" : "RESERVATION_REJECTED"
@@ -64,8 +65,20 @@ export const useReservations = () => {
     }
   };
 
+  const checkPendingReservationStatus = async (postId, userId) => {
+    try {
+      const { pending, error } = await checkPendingReservation(postId, userId);
+      if (error) throw error;
+      return pending;
+    } catch (error) {
+      console.error("Error checking pending reservation:", error);
+      return false;
+    }
+  };
+
   return {
     createNewReservation,
     respondToReservation,
+    checkPendingReservationStatus,
   };
 };

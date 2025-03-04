@@ -1,54 +1,20 @@
 import { useEffect } from "react";
 import { Heart } from "lucide-react";
-import Navbar from "../pages/Landing/Navbar";
-import Footer from "../pages/Landing/Footer";
-
-const teamMembers = [
-  {
-    id: 1,
-    name: "Ana García",
-    role: "Directora de Proyecto",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Especialista en gestión de proyectos sociales con más de 5 años de experiencia en organizaciones sin fines de lucro.",
-  },
-  {
-    id: 2,
-    name: "Carlos Rodríguez",
-    role: "Desarrollador Frontend",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Apasionado por crear interfaces intuitivas y accesibles que faciliten la experiencia de donación.",
-  },
-  {
-    id: 3,
-    name: "Elena Martínez",
-    role: "Especialista en Marketing",
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Experta en estrategias digitales para aumentar el alcance y el impacto de campañas solidarias.",
-  },
-  {
-    id: 4,
-    name: "Miguel López",
-    role: "Coordinador de Alianzas",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Dedicado a crear conexiones con organizaciones y empresas para maximizar el impacto de nuestras iniciativas.",
-  },
-];
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import { teamMembers } from "../../utils/teamMembers";
+import useScrollNavigation from "../../hooks/useScrollNavigation";
 
 const Nosotros = () => {
+  const { handleNavigation } = useScrollNavigation();
+
   useEffect(() => {
     window.scrollTo(0, 0); // Desplazarse al inicio de la página
   }, []);
+
   return (
     <>
-      <Navbar />
+      <Navbar handleNavigation={handleNavigation} />
       <main className="bg-white pt-24 px-4 sm:px-6 lg:px-8 pb-24">
         {/* Encabezado */}
         <div className="max-w-7xl mx-auto text-center mb-16">
@@ -118,7 +84,10 @@ const Nosotros = () => {
             Tu apoyo es fundamental para que podamos seguir ayudando a quienes
             más lo necesitan.
           </p>
-          <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <button
+            // onClick={handleClick}
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
             Hacer una donación
           </button>
         </div>

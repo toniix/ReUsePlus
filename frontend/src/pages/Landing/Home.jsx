@@ -10,11 +10,14 @@ import Register from "../../Components/Register";
 import Login from "../../Components/Login";
 import Events from "./Events";
 import Donations from "./Donations";
-const Landing = () => {
+import useScrollNavigation from "../../hooks/useScrollNavigation";
+
+const Home = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { handleNavigation } = useScrollNavigation();
 
   const handleOpenLogin = () => {
     setShowRegisterModal(false);
@@ -41,6 +44,7 @@ const Landing = () => {
             handleOpenLogin={handleOpenLogin}
             setIsMenuOpen={setIsMenuOpen}
             isMenuOpen={isMenuOpen}
+            handleNavigation={handleNavigation}
           />
         </header>
         <main>
@@ -95,4 +99,4 @@ const Landing = () => {
   );
 };
 
-export default Landing;
+export default Home;

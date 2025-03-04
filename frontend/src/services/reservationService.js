@@ -39,3 +39,20 @@ export const handleReservationResponse = async (reservationId, accepted) => {
     return { reservation: null, error };
   }
 };
+
+export const checkPendingReservation = async (postId, userId) => {
+  const { data, error } = await supabase
+    .from("reservations")
+    .select("id")
+    .eq("post_id", postId)
+    .eq("requester_id", userId)
+    .eq("status", "PENDIENTE")
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    // Ignoramos el error "PGRST116" que indica que no se encontró ninguna fila
+    return { pending: false, error };
+  }
+
+  return { pending: !!data, error: null };
+};

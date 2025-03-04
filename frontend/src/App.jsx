@@ -1,4 +1,4 @@
-import Landing from "./pages/Landing/Landing";
+import Home from "./pages/Landing/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import NotFound from "./Components/NotFound";
 import ProtectedRoute from "./Components/ProtectedRoute";
@@ -8,7 +8,7 @@ import { PostsProvider } from "./context/PostsContext";
 import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Nosotros from "./Components/Nosotros";
+import Nosotros from "./pages/Landing/Nosotros";
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Landing />
+                <Home />
               </ProtectedRoute>
             }
           />

@@ -39,7 +39,7 @@ const PostsGrid = ({ view }) => {
 
   if (loading || (view === "reserved" && loadingReserved)) {
     return (
-      <div className="flex justify-center items-center h-96">
+      <div className="flex justify-center items-center h-96 px-6">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
       </div>
     );
@@ -54,7 +54,7 @@ const PostsGrid = ({ view }) => {
   }
 
   return (
-    <>
+    <div className="px-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
         {filteredPosts.map((post) => (
           <div
@@ -146,7 +146,7 @@ const PostsGrid = ({ view }) => {
           onPostDeleted={refreshPosts}
         />
       )}
-    </>
+    </div>
   );
 };
 

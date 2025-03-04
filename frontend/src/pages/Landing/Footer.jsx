@@ -23,15 +23,15 @@ const Footer = () => {
   return (
     <footer className="w-full bg-gradient-to-r from-[#0d47a1] via-[#1976d2] to-[#64b5f6]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Top section with logo and newsletter */}
+        {/* Top section with logo and contact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-white/20">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">
               ReUse+
             </h2>
             <p className="text-[#e3f2fd] text-sm sm:text-base max-w-md">
-              Creamos experiencias digitales excepcionales que transforman
-              marcas y hacen crecer negocios.
+              Ayudamos a transformar vidas a través de donaciones y apoyo
+              comunitario.
             </p>
           </div>
           <div className="flex flex-col justify-center">
@@ -59,7 +59,6 @@ const Footer = () => {
             </form>
           </div>
         </div>
-
         {/* Main footer sections - Responsive grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 py-8 border-b border-white/20">
           {/* Nosotros Section */}
@@ -152,11 +151,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center text-sm sm:text-base text-[#e3f2fd]">
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="break-all">info@tuempresa.com</span>
+                <span className="break-all">info@reuseplus.com</span>
               </li>
               <li className="flex items-center text-sm sm:text-base text-[#e3f2fd]">
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
-                <span>+34 123 456 789</span>
+                <span>+51 999999900</span>
               </li>
               <li className="flex items-start text-sm sm:text-base text-[#e3f2fd]">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
@@ -214,7 +213,6 @@ const Footer = () => {
             </p>
           </div>
         </div>
-
         {/* Bottom copyright section */}
         <div className="pt-6 sm:pt-8 text-center">
           <p className="text-white/70 text-xs sm:text-sm">

@@ -94,15 +94,17 @@ function Dashboard() {
           )}
         </div>
 
+        {/* Header de escritorio */}
+        <Header
+          toggleProfileMenu={toggleProfileMenu}
+          isProfileMenuOpen={isProfileMenuOpen}
+          closeProfileMenu={closeProfileMenu}
+          setIsEditProfileOpen={setIsEditProfileOpen}
+        />
+
         {/* Main Content */}
-        <div className="lg:ml-72">
-          <main className="flex-1 flex flex-col">
-            <Header
-              toggleProfileMenu={toggleProfileMenu}
-              isProfileMenuOpen={isProfileMenuOpen}
-              closeProfileMenu={closeProfileMenu}
-              setIsEditProfileOpen={setIsEditProfileOpen}
-            />
+        <main className="flex-1 flex flex-col">
+          <div className="pt-24 lg:ml-72">
             <PostsGrid
               posts={posts}
               onPostClick={handlePostClick}
@@ -110,8 +112,9 @@ function Dashboard() {
               onClosePostModal={handleClosePostModal}
               view={view}
             />
-          </main>
-        </div>
+            {/* Contenido principal de tu dashboard */}
+          </div>
+        </main>
 
         {selectedPost && (
           <PostCardModal post={selectedPost} onClose={handleClosePostModal} />
