@@ -33,10 +33,6 @@ export const GlobalProvider = ({ children }) => {
       setProfile((prevProfile) => ({
         ...prevProfile,
         ...userData, // Esto sobrescribe solo los campos proporcionados en userData
-        // full_name: userData.full_name || prevProfile.full_name,
-        // address: userData.address || prevProfile.address,
-        // avatar: userData.avatar_url || prevProfile.avatar,
-        // phone: userData.phone || prevProfile.phone,
       }));
 
       successToast("Perfil actualizado exitosamente");

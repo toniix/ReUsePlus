@@ -5,14 +5,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useGlobalContext();
   const location = useLocation();
 
-  // Lista de rutas públicas que no requieren autenticación
   const publicRoutes = ["/", "/nosotros"];
-
-  // Añadimos logs para depuración
-  console.log("Current path:", location.pathname);
-  console.log("Is public route?", publicRoutes.includes(location.pathname));
-  console.log("User:", user);
-  console.log("Loading:", loading);
 
   if (loading) {
     console.log("Cargando...");

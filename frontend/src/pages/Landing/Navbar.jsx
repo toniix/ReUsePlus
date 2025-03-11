@@ -13,8 +13,9 @@ const Navbar = ({
         <div className="flex items-center justify-between">
           <Link
             to={"/"}
-            className="text-xl sm:text-2xl font-bold text-[#1565C0] hover:text-[#1976D2] transition-colors duration-300"
+            className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-[#1565C0] hover:text-[#1976D2] transition-colors duration-300"
           >
+            <img src="/Logo3.png" alt="ReUse+" className="w-12 h-12" />
             ReUse+
           </Link>
 

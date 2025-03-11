@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../../supabase/client';
-import { NotificationItem } from './NotificationItem';
-import { usePostsContext } from '../../context/PostsContext';
-import { useGlobalContext } from '../../context/GlobalContext';
+import React, { useEffect, useState } from "react";
+import { supabase } from "../../supabase/client";
+import { NotificationItem } from "./NotificationItem";
+import { usePostsContext } from "../../context/PostsContext";
+import { useGlobalContext } from "../../context/GlobalContext";
+import { usePosts } from "@/hooks/usePosts";
 
 export const NotificationsList = ({ onNotificationRead, onClose }) => {
   const [notifications, setNotifications] = useState([]);
   const { handleReservationResponse } = usePostsContext();
   const { user } = useGlobalContext();
+  const { refreshPosts } = usePosts();
+
+  // useEffect(() => {
+  //   refreshPosts();
+  // }, [refreshPosts]);
 
   const fetchNotifications = async () => {
     if (!user) return;
 
     const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .from("notifications")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (!error && data) {
       setNotifications(data);
@@ -25,14 +31,16 @@ export const NotificationsList = ({ onNotificationRead, onClose }) => {
 
   const markAsRead = async (notificationId) => {
     const { error } = await supabase
-      .from('notifications')
+      .from("notifications")
       .update({ is_read: true })
-      .eq('id', notificationId);
+      .eq("id", notificationId);
 
     if (!error) {
-      setNotifications(notifications.map(notif => 
-        notif.id === notificationId ? { ...notif, is_read: true } : notif
-      ));
+      setNotifications(
+        notifications.map((notif) =>
+          notif.id === notificationId ? { ...notif, is_read: true } : notif
+        )
+      );
       onNotificationRead?.();
     }
   };
@@ -42,11 +50,15 @@ export const NotificationsList = ({ onNotificationRead, onClose }) => {
     if (success) {
       // Actualizar la notificación a 'RESERVA ACEPTADA'
       await supabase
-        .from('notifications')
-        .update({ type: 'RESERVATION_ACCEPTED', content: 'Tu solicitud de reserva ha sido aceptada' })
-        .eq('id', notificationId);
+        .from("notifications")
+        .update({
+          type: "RESERVATION_ACCEPTED",
+          content: "Tu solicitud de reserva ha sido aceptada",
+        })
+        .eq("id", notificationId);
 
       fetchNotifications(); // Refrescar la lista de notificaciones
+      // refreshPosts();
       onClose?.();
     }
   };
@@ -56,9 +68,12 @@ export const NotificationsList = ({ onNotificationRead, onClose }) => {
     if (success) {
       // Actualizar la notificación a 'RESERVA RECHAZADA'
       await supabase
-        .from('notifications')
-        .update({ type: 'RESERVATION_REJECTED', content: 'Tu solicitud de reserva ha sido rechazada' })
-        .eq('id', notificationId);
+        .from("notifications")
+        .update({
+          type: "RESERVATION_REJECTED",
+          content: "Tu solicitud de reserva ha sido rechazada",
+        })
+        .eq("id", notificationId);
 
       fetchNotifications(); // Refrescar la lista de notificaciones
       onClose?.();
@@ -83,8 +98,12 @@ export const NotificationsList = ({ onNotificationRead, onClose }) => {
           <NotificationItem
             key={notification.id}
             notification={notification}
-            onAccept={(reservationId) => handleAccept(reservationId, notification.id)}
-            onReject={(reservationId) => handleReject(reservationId, notification.id)}
+            onAccept={(reservationId) =>
+              handleAccept(reservationId, notification.id)
+            }
+            onReject={(reservationId) =>
+              handleReject(reservationId, notification.id)
+            }
             onRead={() => markAsRead(notification.id)}
           />
         ))

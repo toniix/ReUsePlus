@@ -8,14 +8,25 @@ import { useReservedPosts } from "../../hooks/useReservedPosts";
 
 const PostsGrid = ({ view }) => {
   const { user } = useGlobalContext();
-  const { reservedPosts, loading: loadingReserved } = useReservedPosts(user.id);
+  const {
+    reservedPosts,
+    loading: loadingReserved,
+    refreshReservedPosts,
+  } = useReservedPosts(user.id);
   const [selectedPost, setSelectedPost] = useState(null);
-  const { posts, loading, refreshPosts } = usePosts();
+  const { posts, loading, refreshPosts, handleToggleFavorite } = usePosts(
+    user.id
+  );
 
   // Actualizar posts cuando cambia la vista
   useEffect(() => {
     refreshPosts();
   }, [view, refreshPosts]);
+
+  useEffect(() => {
+    refreshReservedPosts();
+  }, [view, refreshReservedPosts]);
+
   // Determinar qué posts mostrar según la vista seleccionada
   let filteredPosts;
 
@@ -115,7 +126,7 @@ const PostsGrid = ({ view }) => {
                 <div className="flex items-center gap-4">
                   <button className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                     <Heart className="h-4 w-4" />
-                    <span className="text-sm">{post.likes || 0}</span>
+                    <span className="text-sm">{post.favoritesCount || 0}</span>
                   </button>
                   <button className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                     <MessageCircle className="h-4 w-4" />
@@ -123,15 +134,23 @@ const PostsGrid = ({ view }) => {
                   </button>
                 </div>
                 <button
-                  className="bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1.5"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    post.isFavorited
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent opening post modal
-                    // TODO: Implement interest logic
-                    console.log(`Interested in post ${post.id}`);
+                    e.stopPropagation();
+                    handleToggleFavorite(post.id);
                   }}
                 >
-                  <Heart className="h-3 w-3" />
-                  Me Interesa
+                  <Heart
+                    className={`h-3 w-3 ${
+                      post.isFavorited ? "fill-current" : ""
+                    }`}
+                  />
+                  {post.isFavorited ? "Me Interesa" : "Me Interesa"}
+                  <span className="text-sm">{post.favoritesCount}</span>
                 </button>
               </div>
             </div>

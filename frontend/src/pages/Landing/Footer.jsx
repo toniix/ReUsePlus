@@ -12,9 +12,11 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import useScrollNavigation from "../../hooks/useScrollNavigation";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
+  const { handleNavigation } = useScrollNavigation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -91,14 +93,6 @@ const Footer = () => {
                   Equipo
                 </a>
               </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm sm:text-base text-[#e3f2fd] hover:text-white transition-colors"
-                >
-                  Historia
-                </a>
-              </li>
             </ul>
           </div>
 
@@ -132,14 +126,6 @@ const Footer = () => {
                   Cookies
                 </a>
               </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm sm:text-base text-[#e3f2fd] hover:text-white transition-colors"
-                >
-                  Aviso legal
-                </a>
-              </li>
             </ul>
           </div>
 
@@ -153,22 +139,19 @@ const Footer = () => {
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
                 <span className="break-all">info@reuseplus.com</span>
               </li>
-              <li className="flex items-center text-sm sm:text-base text-[#e3f2fd]">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
-                <span>+51 999999900</span>
-              </li>
               <li className="flex items-start text-sm sm:text-base text-[#e3f2fd]">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
                 <span>Calle Principal 123, Ciudad</span>
               </li>
               <li>
-                <a
-                  href="#contact"
+                <button
+                  key={"contact"}
+                  onClick={() => handleNavigation("contact")}
                   className="text-sm sm:text-base text-[#e3f2fd] hover:text-white transition-colors flex items-center"
                 >
                   <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
                   <span>Formulario de contacto</span>
-                </a>
+                </button>
               </li>
             </ul>
           </div>

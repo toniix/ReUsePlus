@@ -15,9 +15,6 @@ function App() {
     <GlobalProvider>
       <PostsProvider>
         <Routes>
-          {/* Rutas públicas */}
-          {/* <Route path="/" element={<Landing />} />
-          <Route path="/nosotros" element={<Nosotros />} /> */}
           <Route
             path="/"
             element={

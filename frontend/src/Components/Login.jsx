@@ -42,9 +42,11 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full">
-          <h2 className="text-2xl font-bold mb-6">Iniciar Sesión</h2>
+      <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-lg">
+          <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+            Iniciar Sesión
+          </h2>
           {error && (
             <div
               className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
@@ -70,7 +72,6 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -82,7 +83,6 @@ const Login = ({ setShowLoginModal, handleOpenRegister }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
